@@ -25,6 +25,7 @@ input{width:100%;background:#fff;border:1px solid var(--bd);color:var(--tx);bord
 .seg .on{background:linear-gradient(90deg,#1e9bd7,#1565d8);color:#fff}
 .chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
 .chip{border:1px solid #b9d3f0;background:#fff;color:var(--tx2);border-radius:20px;padding:9px 16px;white-space:nowrap;cursor:pointer;font-weight:500}
+.grp{flex:none;align-self:center;font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;padding:0 2px 0 6px;border-left:2px solid #b9d3f0}
 .chip.on{background:#e3f0ff;color:var(--pri);border-color:var(--pri)}
 .ph{display:flex;gap:12px;align-items:flex-start}
 .av{width:52px;height:52px;border-radius:50%;flex:none;background:#e3f0ff;border:2px solid #b9d3f0;display:flex;align-items:center;justify-content:center;color:var(--pri);font-weight:800;font-size:20px;overflow:hidden}
@@ -56,7 +57,7 @@ label{display:block;color:var(--mut);font-size:13px;margin:12px 0 6px}
 
 <!-- GIAO THƯƠNG -->
 <section class="page on" id="cho">
-  <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">🤝</div><div class="mid"><h1>Nhu cầu Mua / Bán</h1><small>Kết nối nhu cầu giao thương trong Hiệp hội</small></div><button class="ib" onclick="toggleSearch()">🔍</button></div>
+  <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">🤝</div><div class="mid"><h1>Nhu cầu Mua / Bán</h1><small>Cơ khí – Điện phục vụ các ngành</small></div><button class="ib" onclick="toggleSearch()">🔍</button></div>
   <input id="q" placeholder="Tìm nhu cầu, doanh nghiệp, khu vực..." style="display:none">
   <div class="seg" id="seg"><div data-v="mua" class="on">I. NHU CẦU MUA</div><div data-v="ban">II. NHU CẦU BÁN</div></div>
   <div class="chips" id="chips"></div>
@@ -154,7 +155,7 @@ async function send(data){
 }
 function me(){return ld("gt_me",{})}
 function field(id,label,ph,v,type,area){return `<label>${label}</label>${area?`<textarea id="${id}" rows="4" placeholder="${ph}">${esc(v)}</textarea>`:`<input id="${id}" type="${type||"text"}" placeholder="${ph}" value="${esc(v)}">`}`}
-function lvSelect(id,v){return `<label>Lĩnh vực hoạt động *</label><select id="${id}"><option value="">— Chọn nhóm ngành —</option>${LV.map((x,i)=>`<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`).join("")}</select>`}
+function lvSelect(id,v){return `<label>Lĩnh vực hoạt động *</label><select id="${id}"><option value="">— Chọn nhóm ngành —</option><optgroup label="CHUYÊN NGÀNH CƠ KHÍ – ĐIỆN">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(0,7)}</optgroup><optgroup label="NGÀNH PHỤC VỤ">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(7,LV.length)}</optgroup></select>`}
 function modal(html){$("#mbody").innerHTML=html;$("#modal").style.display="flex"}
 function closeM(){$("#modal").style.display="none"}
 const val=i=>($(i)?.value||"").trim();
@@ -201,7 +202,7 @@ function card(p,full){
 }
 function render(){
   document.querySelectorAll("#seg div").forEach(d=>d.classList.toggle("on",d.dataset.v==st.type));
-  $("#chips").innerHTML=`<div class="chip ${st.nhom<0?"on":""}" data-n="-1">Tất cả</div>`+LV_NGAN.map((n,i)=>`<div class="chip ${st.nhom==i?"on":""}" data-n="${i}">(${i+1}) ${esc(n)}</div>`).join("");
+  $("#chips").innerHTML=`<div class="chip ${st.nhom<0?"on":""}" data-n="-1">Tất cả</div>`+LV_NGAN.map((n,i)=>(i==0?`<div class="grp">Cơ khí – Điện</div>`:i==7?`<div class="grp">Ngành phục vụ</div>`:"")+`<div class="chip ${st.nhom==i?"on":""}" data-n="${i}">(${i+1}) ${esc(n)}</div>`).join("");
   document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>{st.nhom=+c.dataset.n;render()});
   const q=st.q.toLowerCase(),L=posts.filter(p=>p.loai==st.type&&(st.nhom<0||p.nhom==st.nhom)&&(!q||[p.tieu_de,p.mo_ta,p.cong_ty,p.ho_ten,p.khu_vuc,LV[p.nhom],p.san_pham].join(" ").toLowerCase().includes(q))).sort((a,b)=>b.t-a.t);
   $("#count").textContent=`${L.length} tin cần ${st.type=="mua"?"mua":"bán"}`;
