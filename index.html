@@ -59,7 +59,7 @@ label{display:block;color:var(--mut);font-size:13px;margin:12px 0 6px}
 <section class="page on" id="cho">
   <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">🤝</div><div class="mid"><h1>Nhu cầu Mua / Bán</h1><small>Kết nối nhu cầu giao thương trong Hiệp hội</small></div><button class="ib" onclick="toggleSearch()">🔍</button></div>
   <input id="q" placeholder="Tìm nhu cầu, doanh nghiệp, khu vực..." style="display:none">
-  <div class="seg" id="seg"><div data-v="mua" class="on">I. NHU CẦU MUA</div><div data-v="ban">II. NHU CẦU BÁN</div></div>
+  <div class="seg" id="seg"><div data-v="mua" class="on">NHU CẦU MUA</div><div data-v="ban">NHU CẦU BÁN</div></div>
   <div class="chips" id="chips"></div>
   <div class="card" style="padding:16px;text-align:center">
     <div class="mut" style="font-size:13px;margin-bottom:10px">Anh/chị có nhu cầu mua / bán? Gửi cho Ban quản trị, tin sẽ hiển thị sau khi được duyệt.</div>
@@ -172,7 +172,7 @@ async function submitContact(id){const p=P(id),d={ten:val("#cN"),cty:val("#cC"),
   openOA(`[KẾT NỐI] ${d.ten} – ${d.cty} – ${d.sdt}\nQuan tâm: ${p.tieu_de}${msg?"\nLời nhắn: "+msg:""}`)}
 function openPost(){const m=me();
   modal(`<h3 style="margin:0 0 4px">Gửi nhu cầu mua / bán</h3><div class="mut" style="font-size:13px">Tin sẽ hiển thị sau khi Ban quản trị duyệt.</div>
-  <label>Loại nhu cầu *</label><div class="seg" id="pT" style="box-shadow:none;border:1px solid var(--bd)"><div data-v="mua" class="${st.type=="mua"?"on":""}">I. Cần mua</div><div data-v="ban" class="${st.type=="ban"?"on":""}">II. Cần bán</div></div>
+  <label>Loại nhu cầu *</label><div class="seg" id="pT" style="box-shadow:none;border:1px solid var(--bd)"><div data-v="mua" class="${st.type=="mua"?"on":""}">Cần mua</div><div data-v="ban" class="${st.type=="ban"?"on":""}">Cần bán</div></div>
   ${field("pTi","Tiêu đề *","VD: Cần mua thép tấm SS400 số lượng lớn","")}${field("pD","Mô tả chi tiết","Số lượng, tiêu chuẩn, thời gian...","",0,1)}
   ${field("pK","Khu vực","VD: Quận 12, TP.HCM","")}
   ${field("pN","Họ tên *","",m.ten)}${field("pC","Doanh nghiệp *","",m.cty)}${field("pP","Số điện thoại / Zalo *","",m.sdt,"tel")}${field("pE","Email","",m.email,"email")}
@@ -212,7 +212,7 @@ function render(){
 }
 function toggleSave(id){saved=saved.includes(id)?saved.filter(x=>x!=id):[...saved,id];sv("gt_saved",saved);toast(saved.includes(id)?"Đã lưu":"Đã bỏ lưu");render();if($("#detail.on"))openD(id)}
 function openD(id){const p=P(id),pid=esc(JSON.stringify(id));
-  $("#detail").innerHTML=`<div class="top"><button class="ib" onclick="go('cho')">‹</button><div class="mid"><h1>Chi tiết nhu cầu</h1><small>${p.loai=="ban"?"II. Nhu cầu bán":"I. Nhu cầu mua"}</small></div><button class="ib" onclick='share(${pid})'>↗</button></div>${card(p,true)}`;
+  $("#detail").innerHTML=`<div class="top"><button class="ib" onclick="go('cho')">‹</button><div class="mid"><h1>Chi tiết nhu cầu</h1><small>${p.loai=="ban"?"Nhu cầu bán":"Nhu cầu mua"}</small></div><button class="ib" onclick='share(${pid})'>↗</button></div>${card(p,true)}`;
   go("detail")}
 function toggleSearch(){const i=$("#q");i.style.display=i.style.display=="none"?"block":"none";if(i.style.display=="block")i.focus()}
 function go(p){
