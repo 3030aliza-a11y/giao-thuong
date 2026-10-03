@@ -14,7 +14,7 @@
  * DUYỆT TIN: tin hội viên gửi có trang_thai = "cho_duyet". Admin đổi thành "duyet" là tin hiện trên app.
  * ADMIN TỰ ĐĂNG: nhập thẳng 1 dòng vào tab TinDang, trang_thai = "duyet".
  */
-const EMAIL_HAMEE = "email@hamee.vn"; // ← email nhận thông báo (nhiều email cách nhau dấu phẩy)
+const EMAIL_HAMEE = "hoicokhidien@gmail.com"; // ← email nhận thông báo (nhiều email cách nhau dấu phẩy)
 
 function doPost(e) {
   const d = JSON.parse(e.postData.contents);
