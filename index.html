@@ -35,6 +35,7 @@ input{width:100%;background:#fff;border:1px solid var(--bd);color:var(--tx);bord
 .card h3{font-size:18px;color:var(--pri);margin:12px 0 6px;line-height:1.35}
 .desc{color:var(--tx2);line-height:1.5;white-space:pre-wrap}
 .clip{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.info{margin-top:10px;background:#f3f8fe;border-radius:12px;padding:10px 12px;font-size:13px;color:var(--tx2);line-height:1.5}.info div{display:flex;gap:8px}.info span{flex:none;width:72px;color:var(--mut)}.info a{color:var(--pri);word-break:break-all}
 .meta{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--mut);font-size:13px;border-top:1px solid #edf2f8;padding-top:12px;margin-top:12px}
 .acts{display:flex;gap:8px;align-items:center;margin-top:12px}.acts .more{margin-left:auto;font-weight:600;cursor:pointer;color:var(--pri)}
 nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#fff;border-top:1px solid #e3ebf5;padding-bottom:env(safe-area-inset-bottom);z-index:20;box-shadow:0 -2px 10px #0a4fb314}
@@ -89,7 +90,7 @@ label{display:block;color:var(--mut);font-size:13px;margin:12px 0 6px}
                Để trống "" thì app dùng dữ liệu mẫu bên dưới.
    ADMIN_ZALO: số điện thoại Zalo của Ban quản trị, nhận nhu cầu hội viên gửi.
    Cột của Sheet (dòng 1 là tiêu đề, đúng tên như sau):
-   loai | ho_ten | cong_ty | tieu_de | mo_ta | nganh | khu_vuc | sdt | ngay_dang | logo | trang_thai
+   loai | ho_ten | cong_ty | tieu_de | mo_ta | nganh | khu_vuc | sdt | ngay_dang | logo | trang_thai | email | website | linh_vuc | san_pham
    - loai: "mua" hoặc "ban"   - ngay_dang: dd/mm/yyyy   - logo: link ảnh (không bắt buộc)
    - trang_thai: chỉ tin ghi "duyet" mới hiện (tin hội viên gửi lên sẽ là "cho_duyet").                                     */
 const SHEET_CSV="";        // link CSV tab "TinDang" đã công bố
@@ -101,11 +102,11 @@ const OA_LINK="https://zalo.me/s/4132427223821259878/";  // link Zalo OA (ví d�
 const D=864e5,now=Date.now();
 const SEED=[
 {loai:"mua",ho_ten:"Huỳnh Công Trấn",cong_ty:"Công ty TNHH CI Research",tieu_de:"Cần tìm đơn vị truyền thông chạy quảng cáo đa kênh",mo_ta:"Cần tìm đơn vị truyền thông chạy quảng cáo đa kênh",nganh:"Truyền thông - Sự kiện - Nghiên cứu thị trường",khu_vuc:"Quận 6, TP.HCM",sdt:"0900000001",t:now-8*D},
-{loai:"mua",ho_ten:"Phạm Văn Tuyến",cong_ty:"Công ty TNHH SX-TM Cơ Điện và Điện Tử Hàn Sinh",tieu_de:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",mo_ta:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",nganh:"Điện - Điện tử - Điện lạnh",khu_vuc:"Quận Bình Tân, TP.HCM",sdt:"0900000002",t:now-8*D},
+{loai:"mua",ho_ten:"Phạm Văn Tuyến",cong_ty:"Công ty TNHH SX-TM Cơ Điện và Điện Tử Hàn Sinh",linh_vuc:"Sản xuất – thương mại thiết bị cơ điện",san_pham:"Tủ điện, thiết bị điện công nghiệp",tieu_de:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",mo_ta:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",nganh:"Điện - Điện tử - Điện lạnh",khu_vuc:"Quận Bình Tân, TP.HCM",sdt:"0900000002",t:now-8*D},
 {loai:"mua",ho_ten:"Đinh Thị Bích Châu",cong_ty:"Công ty Cổ phần Topps Hoanchau",tieu_de:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",mo_ta:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",nganh:"Nông - Lâm - Thuỷ hải sản",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000003",t:now-8*D},
 {loai:"mua",ho_ten:"Vũ Bảo Anh",cong_ty:"Công ty TNHH Sản Xuất-Thương Mại Vinh Phát Đạt",tieu_de:"Cần tìm nhà cung cấp vải suit nhập khẩu ổn định",mo_ta:"Cần tìm nhà cung cấp vải suit nhập khẩu ổn định",nganh:"Dệt may - Thời trang",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000004",t:now-8*D},
 {loai:"mua",ho_ten:"Lưu Thị Quỳnh Thư",cong_ty:"Công ty TNHH Thực Phẩm Tâm Minh",tieu_de:"Tìm đối tác cung cấp suất ăn công nghiệp khu vực Bình Tân",mo_ta:"Tìm đối tác cung cấp suất ăn công nghiệp khu vực Bình Tân",nganh:"Lương thực - Thực phẩm - Đồ uống",khu_vuc:"Quận 5, TP.HCM",sdt:"0900000005",t:now-8*D},
-{loai:"ban",ho_ten:"Nguyễn Minh Khoa",cong_ty:"Công ty TNHH Gia Công Cơ Khí MK",tieu_de:"Nhận gia công CNC, tiện phay chính xác theo bản vẽ",mo_ta:"Ưu đãi cho hội viên. Nhận đơn số lượng nhỏ, giao nhanh.",nganh:"Cơ khí - Chế tạo",khu_vuc:"Quận 12, TP.HCM",sdt:"0900000006",t:now-3*D},
+{loai:"ban",ho_ten:"Nguyễn Minh Khoa",cong_ty:"Công ty TNHH Gia Công Cơ Khí MK",website:"cokhimk.vn",linh_vuc:"Gia công cơ khí chính xác",san_pham:"Chi tiết máy, khuôn mẫu, gia công CNC",tieu_de:"Nhận gia công CNC, tiện phay chính xác theo bản vẽ",mo_ta:"Ưu đãi cho hội viên. Nhận đơn số lượng nhỏ, giao nhanh.",nganh:"Cơ khí - Chế tạo",khu_vuc:"Quận 12, TP.HCM",sdt:"0900000006",t:now-3*D},
 {loai:"ban",ho_ten:"Trần Thanh Hà",cong_ty:"Công ty CP Logistics Hà Phát",tieu_de:"Dịch vụ vận chuyển hàng Bắc – Nam, xe ghép & nguyên chuyến",mo_ta:"Giá ưu đãi cho hội viên, theo dõi đơn hàng realtime.",nganh:"Vận tải - Logistics",khu_vuc:"Quận 7, TP.HCM",sdt:"0900000007",t:now-5*D}];
 
 const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
@@ -154,8 +155,9 @@ const val=i=>($(i)?.value||"").trim();
 function connect(id){const p=P(id),m=me();
   modal(`<h3 style="margin:0 0 4px">Kết nối giao thương</h3><div class="mut" style="font-size:13px">Ban quản trị HAMEE sẽ liên hệ và kết nối anh/chị với <b>${esc(p.cong_ty)}</b> về:<br>“${esc(p.tieu_de)}”</div>
   ${field("cN","Họ tên *","Nguyễn Văn A",m.ten)}${field("cC","Doanh nghiệp *","Công ty...",m.cty)}${field("cP","Số điện thoại / Zalo *","09xxxxxxxx",m.sdt,"tel")}${field("cE","Email","email@congty.vn",m.email,"email")}
+  ${field("cW","Website công ty","congty.vn",m.web)}${field("cL","Lĩnh vực hoạt động","VD: Gia công cơ khí chính xác",m.lv)}${field("cS","Sản phẩm / dịch vụ","VD: Khuôn mẫu, chi tiết máy...",m.sp,0,1)}
   ${field("cM","Lời nhắn","Nội dung muốn trao đổi...","",0,1)}<button class="btn" style="margin-top:16px" onclick='submitContact(${esc(JSON.stringify(id))})'>Gửi yêu cầu kết nối</button>`)}
-async function submitContact(id){const p=P(id),d={ten:val("#cN"),cty:val("#cC"),sdt:val("#cP"),email:val("#cE")};
+async function submitContact(id){const p=P(id),d={ten:val("#cN"),cty:val("#cC"),sdt:val("#cP"),email:val("#cE"),web:val("#cW"),lv:val("#cL"),sp:val("#cS")};
   if(!d.ten||!d.cty||!/^0\d{9,10}$/.test(d.sdt))return toast("Nhập đủ họ tên, doanh nghiệp, SĐT đúng");
   sv("gt_me",d);const msg=val("#cM");
   try{await send({action:"ket_noi",...d,loi_nhan:msg,tin:p.tieu_de,loai:p.loai,cong_ty_dang:p.cong_ty,nguoi_dang:p.ho_ten,sdt_nguoi_dang:p.sdt})}catch(e){}
@@ -167,9 +169,10 @@ function openPost(){const m=me();
   ${field("pTi","Tiêu đề *","VD: Cần mua thép tấm SS400 số lượng lớn","")}${field("pD","Mô tả chi tiết","Số lượng, tiêu chuẩn, thời gian...","",0,1)}
   ${field("pNg","Ngành nghề","VD: Cơ khí - Chế tạo","")}${field("pK","Khu vực","VD: Quận 12, TP.HCM","")}
   ${field("pN","Họ tên *","",m.ten)}${field("pC","Doanh nghiệp *","",m.cty)}${field("pP","Số điện thoại / Zalo *","",m.sdt,"tel")}${field("pE","Email","",m.email,"email")}
+  ${field("pW","Website công ty","congty.vn",m.web)}${field("pL","Lĩnh vực hoạt động","VD: Sản xuất thiết bị điện",m.lv)}${field("pS","Sản phẩm / dịch vụ","VD: Tủ điện, máng cáp...",m.sp,0,1)}
   <button class="btn" style="margin-top:16px" onclick="submitPost()">Gửi duyệt</button>`);
   document.querySelectorAll("#pT div").forEach(d=>d.onclick=()=>document.querySelectorAll("#pT div").forEach(x=>x.classList.toggle("on",x==d)))}
-async function submitPost(){const d={ten:val("#pN"),cty:val("#pC"),sdt:val("#pP"),email:val("#pE")};
+async function submitPost(){const d={ten:val("#pN"),cty:val("#pC"),sdt:val("#pP"),email:val("#pE"),web:val("#pW"),lv:val("#pL"),sp:val("#pS")};
   if(!val("#pTi")||!d.ten||!d.cty||!/^0\d{9,10}$/.test(d.sdt))return toast("Nhập đủ các mục *, SĐT đúng");
   sv("gt_me",d);const loai=$("#pT .on").dataset.v;
   try{await send({action:"dang_tin",loai,tieu_de:val("#pTi"),mo_ta:val("#pD"),nganh:val("#pNg"),khu_vuc:val("#pK"),...d})}catch(e){}
@@ -185,6 +188,7 @@ function card(p,full){
   return `<div class="card"><div class="ph"><div class="av">${p.logo?`<img src="${esc(p.logo)}" alt="">`:ini}</div><div class="n"><b>${esc(p.ho_ten)}</b><div class="co">${esc(p.cong_ty)}</div></div>
   <span class="badge ${p.loai=="ban"?"sell":""}">${p.loai=="ban"?"CẦN BÁN":"CẦN MUA"}</span></div>
   <h3>${esc(p.tieu_de)}</h3><div class="desc ${full?"":"clip"}">${esc(p.mo_ta)}</div>
+  ${(p.linh_vuc||p.san_pham||p.website)?`<div class="info">${p.linh_vuc?`<div><span>Lĩnh vực</span>${esc(p.linh_vuc)}</div>`:""}${p.san_pham?`<div><span>Sản phẩm</span>${esc(p.san_pham)}</div>`:""}${p.website?`<div><span>Website</span><a href="${esc(/^https?:/.test(p.website)?p.website:"https://"+p.website)}" target="_blank">${esc(p.website.replace(/^https?:\/\//,""))}</a></div>`:""}</div>`:""}
   <div class="meta">${p.nganh?`<span>${esc(p.nganh)}</span>`:""}${p.khu_vuc?`<span>📍 ${esc(p.khu_vuc)}</span>`:""}${p.t?`<span>🕒 ${ago(p.t)}</span>`:""}</div>
   <div class="acts"><button class="obtn" onclick='connect(${pid})'>🤝 Kết nối</button><button class="obtn" onclick='toggleSave(${pid})'>${isS?"🔖 Đã lưu":"🏷️ Lưu"}</button>
   ${full?"":`<span class="more" onclick='openD(${pid})'>Xem chi tiết ›</span>`}</div></div>`;
