@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>GIAO THƯƠNG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--pri:#1565d8;--pri2:#0b3b8c;--tx:#14213d;--tx2:#3b4a66;--mut:#6b7a90;--bd:#d6e6f5;--red:#e0475b;--grn:#12a36b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:"Be Vietnam Pro",sans-serif;color:var(--tx);font-size:14px;min-height:100vh;
+ background:linear-gradient(180deg,#0a4fb3 0,#1e9bd7 150px,#e9f3fb 150px);background-attachment:fixed;padding:0 16px calc(76px + env(safe-area-inset-bottom))}
+.page{display:none;padding-top:calc(14px + env(safe-area-inset-top))}.page.on{display:block}
+.top{display:flex;align-items:center;gap:10px;margin:4px 0 18px;text-align:center}
+.top .mid{flex:1}.top h1{font-size:22px;color:#fff;font-weight:800}.top small{color:#dbeeff;font-size:12px}
+.ib{width:44px;height:44px;border-radius:12px;border:0;background:#ffffff33;color:#fff;font-size:20px;cursor:pointer;flex:none}
+.card{background:#fff;border:1px solid var(--bd);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 4px 14px #0a4fb314}
+.btn{border:0;border-radius:14px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;background:linear-gradient(90deg,#1e9bd7,#1565d8);color:#fff;width:100%}
+.obtn{border:1px solid #b9d3f0;background:#f3f8fe;color:var(--pri);border-radius:12px;padding:10px 14px;font-weight:600;font-family:inherit;cursor:pointer;font-size:14px}
+.mut{color:var(--mut)}
+input{width:100%;background:#fff;border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:12px;font-size:15px;font-family:inherit;margin-bottom:12px}
+.seg{display:flex;background:#fff;border-radius:16px;padding:5px;margin-bottom:12px;box-shadow:0 4px 14px #0a4fb314}
+.seg div{flex:1;text-align:center;padding:12px 6px;border-radius:12px;font-weight:700;cursor:pointer;color:var(--tx2)}
+.seg .on{background:linear-gradient(90deg,#1e9bd7,#1565d8);color:#fff}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.chip{border:1px solid #b9d3f0;background:#fff;color:var(--tx2);border-radius:20px;padding:9px 16px;white-space:nowrap;cursor:pointer;font-weight:500}
+.chip.on{background:#e3f0ff;color:var(--pri);border-color:var(--pri)}
+.ph{display:flex;gap:12px;align-items:flex-start}
+.av{width:52px;height:52px;border-radius:50%;flex:none;background:#e3f0ff;border:2px solid #b9d3f0;display:flex;align-items:center;justify-content:center;color:var(--pri);font-weight:800;font-size:20px;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.ph .n{flex:1}.ph b{font-size:16px;color:var(--pri2)}.ph .co{color:var(--mut);font-size:13px}
+.badge{border:1px solid #9fdcc3;color:var(--grn);background:#e8f8f1;border-radius:10px;padding:5px 10px;font-size:11px;font-weight:700;letter-spacing:1.5px;white-space:nowrap}
+.badge.sell{border-color:#f7c89b;color:#d9731c;background:#fff4ea}
+.card h3{font-size:18px;color:var(--pri);margin:12px 0 6px;line-height:1.35}
+.desc{color:var(--tx2);line-height:1.5;white-space:pre-wrap}
+.clip{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--mut);font-size:13px;border-top:1px solid #edf2f8;padding-top:12px;margin-top:12px}
+.acts{display:flex;gap:8px;align-items:center;margin-top:12px}.acts .more{margin-left:auto;font-weight:600;cursor:pointer;color:var(--pri)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#fff;border-top:1px solid #e3ebf5;padding-bottom:env(safe-area-inset-bottom);z-index:20;box-shadow:0 -2px 10px #0a4fb314}
+nav button{flex:1;background:0;border:0;color:#5b6b82;font-family:inherit;font-size:12px;padding:10px 0 8px;cursor:pointer;position:relative}
+nav button span{display:block;font-size:20px;margin-bottom:3px;opacity:.55}
+nav button.on{color:var(--pri);font-weight:600}nav button.on span{opacity:1}
+nav button.on:before{content:"";position:absolute;top:0;left:35%;right:35%;height:3px;border-radius:3px;background:var(--pri)}
+.empty{text-align:center;color:var(--mut);padding:30px;background:#fff;border-radius:16px}
+#modal{position:fixed;inset:0;background:#0b1a3a88;display:none;align-items:flex-end;z-index:40}
+.sheet{background:#fff;width:100%;max-height:90vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));position:relative}
+.sheet h3{color:var(--pri2);font-size:18px}.x{position:absolute;right:12px;top:12px;border:0;background:#eef3f9;width:32px;height:32px;border-radius:50%;cursor:pointer}
+label{display:block;color:var(--mut);font-size:13px;margin:12px 0 6px}
+.sheet input,textarea{width:100%;background:#f6faff;border:1px solid var(--bd);border-radius:12px;padding:12px;font-size:15px;font-family:inherit;margin:0}
+.toast{position:fixed;left:50%;bottom:100px;z-index:60;transform:translateX(-50%);background:#0b3b8ce6;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:50;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- GIAO THƯƠNG -->
+<section class="page on" id="cho">
+  <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">🤝</div><div class="mid"><h1>Nhu cầu Mua / Bán</h1><small>Kết nối nhu cầu giao thương trong Hiệp hội</small></div><button class="ib" onclick="toggleSearch()">🔍</button></div>
+  <input id="q" placeholder="Tìm nhu cầu, doanh nghiệp, khu vực..." style="display:none">
+  <div class="seg" id="seg"><div data-v="mua" class="on">I. NHU CẦU MUA</div><div data-v="ban">II. NHU CẦU BÁN</div></div>
+  <div class="chips" id="chips"></div>
+  <div class="card" style="padding:16px;text-align:center">
+    <div class="mut" style="font-size:13px;margin-bottom:10px">Anh/chị có nhu cầu mua / bán? Gửi cho Ban quản trị, tin sẽ hiển thị sau khi được duyệt.</div>
+    <button class="btn" onclick="openPost()">📩 Gửi nhu cầu mua / bán</button>
+  </div>
+  <div class="mut" id="count" style="margin:4px 0 12px"></div>
+  <div id="list"></div>
+</section>
+
+<!-- CHI TIẾT -->
+<section class="page" id="detail"></section>
+
+<!-- ĐÃ LƯU -->
+<section class="page" id="luu">
+  <div class="top"><div class="mid"><h1>Tin đã lưu</h1><small>Nhu cầu anh/chị quan tâm</small></div></div>
+  <div id="savedList"></div>
+</section>
+
+<nav>
+  <button class="on" data-p="cho"><span>🛍️</span>Giao thương</button>
+  <button data-p="luu"><span>🔖</span>Đã lưu</button>
+</nav>
+<div id="modal" onclick="if(event.target==this)closeM()"><div class="sheet"><button class="x" onclick="closeM()">✕</button><div id="mbody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================== CẤU HÌNH (admin chỉnh ở đây) ==================
+   SHEET_CSV : link CSV của Google Sheet (Tệp → Chia sẻ → Công bố lên web → định dạng CSV).
+               Để trống "" thì app dùng dữ liệu mẫu bên dưới.
+   ADMIN_ZALO: số điện thoại Zalo của Ban quản trị, nhận nhu cầu hội viên gửi.
+   Cột của Sheet (dòng 1 là tiêu đề, đúng tên như sau):
+   loai | ho_ten | cong_ty | tieu_de | mo_ta | nganh | khu_vuc | sdt | ngay_dang | logo | trang_thai
+   - loai: "mua" hoặc "ban"   - ngay_dang: dd/mm/yyyy   - logo: link ảnh (không bắt buộc)
+   - trang_thai: chỉ tin ghi "duyet" mới hiện (tin hội viên gửi lên sẽ là "cho_duyet").                                     */
+const SHEET_CSV="";        // link CSV tab "TinDang" đã công bố
+const SCRIPT_URL="";       // link Web App của Google Apps Script (file apps-script.gs)
+const OA_ID="";            // ID Zalo OA HAMEE (lấy ở oa.zalo.me → Thông tin OA)
+const OA_LINK="https://zalo.me/";  // link Zalo OA (ví dụ https://zalo.me/xxxxxxxx), dùng khi ngoài Zalo
+/* ================================================================== */
+
+const D=864e5,now=Date.now();
+const SEED=[
+{loai:"mua",ho_ten:"Huỳnh Công Trấn",cong_ty:"Công ty TNHH CI Research",tieu_de:"Cần tìm đơn vị truyền thông chạy quảng cáo đa kênh",mo_ta:"Cần tìm đơn vị truyền thông chạy quảng cáo đa kênh",nganh:"Truyền thông - Sự kiện - Nghiên cứu thị trường",khu_vuc:"Quận 6, TP.HCM",sdt:"0900000001",t:now-8*D},
+{loai:"mua",ho_ten:"Phạm Văn Tuyến",cong_ty:"Công ty TNHH SX-TM Cơ Điện và Điện Tử Hàn Sinh",tieu_de:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",mo_ta:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",nganh:"Điện - Điện tử - Điện lạnh",khu_vuc:"Quận Bình Tân, TP.HCM",sdt:"0900000002",t:now-8*D},
+{loai:"mua",ho_ten:"Đinh Thị Bích Châu",cong_ty:"Công ty Cổ phần Topps Hoanchau",tieu_de:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",mo_ta:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",nganh:"Nông - Lâm - Thuỷ hải sản",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000003",t:now-8*D},
+{loai:"mua",ho_ten:"Vũ Bảo Anh",cong_ty:"Công ty TNHH Sản Xuất-Thương Mại Vinh Phát Đạt",tieu_de:"Cần tìm nhà cung cấp vải suit nhập khẩu ổn định",mo_ta:"Cần tìm nhà cung cấp vải suit nhập khẩu ổn định",nganh:"Dệt may - Thời trang",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000004",t:now-8*D},
+{loai:"mua",ho_ten:"Lưu Thị Quỳnh Thư",cong_ty:"Công ty TNHH Thực Phẩm Tâm Minh",tieu_de:"Tìm đối tác cung cấp suất ăn công nghiệp khu vực Bình Tân",mo_ta:"Tìm đối tác cung cấp suất ăn công nghiệp khu vực Bình Tân",nganh:"Lương thực - Thực phẩm - Đồ uống",khu_vuc:"Quận 5, TP.HCM",sdt:"0900000005",t:now-8*D},
+{loai:"ban",ho_ten:"Nguyễn Minh Khoa",cong_ty:"Công ty TNHH Gia Công Cơ Khí MK",tieu_de:"Nhận gia công CNC, tiện phay chính xác theo bản vẽ",mo_ta:"Ưu đãi cho hội viên. Nhận đơn số lượng nhỏ, giao nhanh.",nganh:"Cơ khí - Chế tạo",khu_vuc:"Quận 12, TP.HCM",sdt:"0900000006",t:now-3*D},
+{loai:"ban",ho_ten:"Trần Thanh Hà",cong_ty:"Công ty CP Logistics Hà Phát",tieu_de:"Dịch vụ vận chuyển hàng Bắc – Nam, xe ghép & nguyên chuyến",mo_ta:"Giá ưu đãi cho hội viên, theo dõi đơn hàng realtime.",nganh:"Vận tải - Logistics",khu_vuc:"Quận 7, TP.HCM",sdt:"0900000007",t:now-5*D}];
+
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let posts=[],saved=ld("gt_saved",[]),st={type:"mua",nganh:"",q:""};
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ago=t=>{if(!t)return"";const m=(Date.now()-t)/6e4;return m<60?Math.max(1,m|0)+" phút trước":m<1440?(m/60|0)+" giờ trước":(m/1440|0)+" ngày trước"};
+function toast(m){const e=$("#toast");e.textContent=m;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",1800)}
+
+// ---- Đọc CSV Google Sheet ----
+function parseCSV(txt){const rows=[];let r=[],f="",q=false;
+  for(let i=0;i<txt.length;i++){const c=txt[i];
+    if(q){if(c=='"'){if(txt[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c=='"')q=true;else if(c==","){r.push(f);f=""}else if(c=="\n"||c=="\r"){if(c=="\r"&&txt[i+1]=="\n")i++;r.push(f);rows.push(r);r=[];f=""}else f+=c}
+  if(f||r.length){r.push(f);rows.push(r)}
+  const h=rows.shift().map(x=>x.trim().toLowerCase());
+  return rows.filter(r=>r.some(x=>x.trim())).map(r=>Object.fromEntries(h.map((k,i)=>[k,(r[i]||"").trim()])));}
+function toTime(s){const m=/(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s||"");return m?new Date(+m[3],m[2]-1,+m[1]).getTime():0}
+async function load(){
+  let rows=SEED;
+  if(SHEET_CSV){try{const r=await fetch(SHEET_CSV+(SHEET_CSV.includes("?")?"&":"?")+"t="+Date.now());rows=parseCSV(await r.text()).map(x=>({...x,t:toTime(x.ngay_dang)}));sv("gt_cache",rows)}
+    catch(e){rows=ld("gt_cache",SEED);toast("Đang xem dữ liệu đã lưu")}}
+  posts=rows.map(x=>({...x,loai:(x.loai||"").toLowerCase().replace("á","a")})).filter(x=>(x.loai=="mua"||x.loai=="ban")&&(!("trang_thai" in x)||/^duy[eệ]t$/i.test(x.trang_thai)))
+    .map(x=>({...x,id:(x.loai+x.cong_ty+x.tieu_de).replace(/\s/g,"").slice(0,80)}));
+  render();
+  const qid=new URLSearchParams(location.search).get("id");if(qid&&posts.some(p=>p.id==qid))openD(qid);
+}
+
+// ---- Zalo Mini App (zmp-sdk); ngoài Zalo tự dùng cách thường ----
+const ZMP=window.zmpSdk||null;
+const P=id=>posts.find(x=>x.id==id);
+function call(ph){ZMP?.makePhoneCall?ZMP.makePhoneCall({phoneNumber:ph}):location.href="tel:"+ph}
+function openZalo(ph){const u="https://zalo.me/"+ph;ZMP?.openWebview?ZMP.openWebview({url:u}):window.open(u,"_blank")}
+function openOA(msg){
+  if(ZMP?.openChat&&OA_ID)ZMP.openChat({type:"oa",id:OA_ID,message:msg}).catch(()=>{});
+  else if(ZMP?.openWebview)ZMP.openWebview({url:OA_LINK});else window.open(OA_LINK,"_blank")}
+async function send(data){
+  if(!SCRIPT_URL){console.log("Chưa cấu hình SCRIPT_URL",data);return}
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(data)});
+}
+function me(){return ld("gt_me",{})}
+function field(id,label,ph,v,type,area){return `<label>${label}</label>${area?`<textarea id="${id}" rows="4" placeholder="${ph}">${esc(v)}</textarea>`:`<input id="${id}" type="${type||"text"}" placeholder="${ph}" value="${esc(v)}">`}`}
+function modal(html){$("#mbody").innerHTML=html;$("#modal").style.display="flex"}
+function closeM(){$("#modal").style.display="none"}
+const val=i=>($(i)?.value||"").trim();
+function connect(id){const p=P(id),m=me();
+  modal(`<h3 style="margin:0 0 4px">Kết nối giao thương</h3><div class="mut" style="font-size:13px">Ban quản trị HAMEE sẽ liên hệ và kết nối anh/chị với <b>${esc(p.cong_ty)}</b> về:<br>“${esc(p.tieu_de)}”</div>
+  ${field("cN","Họ tên *","Nguyễn Văn A",m.ten)}${field("cC","Doanh nghiệp *","Công ty...",m.cty)}${field("cP","Số điện thoại / Zalo *","09xxxxxxxx",m.sdt,"tel")}${field("cE","Email","email@congty.vn",m.email,"email")}
+  ${field("cM","Lời nhắn","Nội dung muốn trao đổi...","",0,1)}<button class="btn" style="margin-top:16px" onclick='submitContact(${esc(JSON.stringify(id))})'>Gửi yêu cầu kết nối</button>`)}
+async function submitContact(id){const p=P(id),d={ten:val("#cN"),cty:val("#cC"),sdt:val("#cP"),email:val("#cE")};
+  if(!d.ten||!d.cty||!/^0\d{9,10}$/.test(d.sdt))return toast("Nhập đủ họ tên, doanh nghiệp, SĐT đúng");
+  sv("gt_me",d);const msg=val("#cM");
+  try{await send({action:"ket_noi",...d,loi_nhan:msg,tin:p.tieu_de,loai:p.loai,cong_ty_dang:p.cong_ty,nguoi_dang:p.ho_ten,sdt_nguoi_dang:p.sdt})}catch(e){}
+  closeM();toast("Đã gửi! HAMEE sẽ liên hệ anh/chị sớm");
+  openOA(`[KẾT NỐI] ${d.ten} – ${d.cty} – ${d.sdt}\nQuan tâm: ${p.tieu_de}${msg?"\nLời nhắn: "+msg:""}`)}
+function openPost(){const m=me();
+  modal(`<h3 style="margin:0 0 4px">Gửi nhu cầu mua / bán</h3><div class="mut" style="font-size:13px">Tin sẽ hiển thị sau khi Ban quản trị duyệt.</div>
+  <label>Loại nhu cầu *</label><div class="seg" id="pT" style="box-shadow:none;border:1px solid var(--bd)"><div data-v="mua" class="${st.type=="mua"?"on":""}">I. Cần mua</div><div data-v="ban" class="${st.type=="ban"?"on":""}">II. Cần bán</div></div>
+  ${field("pTi","Tiêu đề *","VD: Cần mua thép tấm SS400 số lượng lớn","")}${field("pD","Mô tả chi tiết","Số lượng, tiêu chuẩn, thời gian...","",0,1)}
+  ${field("pNg","Ngành nghề","VD: Cơ khí - Chế tạo","")}${field("pK","Khu vực","VD: Quận 12, TP.HCM","")}
+  ${field("pN","Họ tên *","",m.ten)}${field("pC","Doanh nghiệp *","",m.cty)}${field("pP","Số điện thoại / Zalo *","",m.sdt,"tel")}${field("pE","Email","",m.email,"email")}
+  <button class="btn" style="margin-top:16px" onclick="submitPost()">Gửi duyệt</button>`);
+  document.querySelectorAll("#pT div").forEach(d=>d.onclick=()=>document.querySelectorAll("#pT div").forEach(x=>x.classList.toggle("on",x==d)))}
+async function submitPost(){const d={ten:val("#pN"),cty:val("#pC"),sdt:val("#pP"),email:val("#pE")};
+  if(!val("#pTi")||!d.ten||!d.cty||!/^0\d{9,10}$/.test(d.sdt))return toast("Nhập đủ các mục *, SĐT đúng");
+  sv("gt_me",d);const loai=$("#pT .on").dataset.v;
+  try{await send({action:"dang_tin",loai,tieu_de:val("#pTi"),mo_ta:val("#pD"),nganh:val("#pNg"),khu_vuc:val("#pK"),...d})}catch(e){}
+  closeM();toast("Đã gửi! Tin sẽ hiển thị sau khi được duyệt");
+  openOA(`[ĐĂNG TIN ${loai=="mua"?"CẦN MUA":"CẦN BÁN"}] ${val("#pTi")||""}\n${d.ten} – ${d.cty} – ${d.sdt}`)}
+function share(id){const p=P(id),u=location.href.split("?")[0]+"?id="+encodeURIComponent(id);
+  if(ZMP?.openShareSheet)ZMP.openShareSheet({type:"zmp_deep_link",data:{title:p.tieu_de,description:p.cong_ty,path:"?id="+encodeURIComponent(id)}});
+  else if(navigator.share)navigator.share({title:p.tieu_de,text:p.cong_ty,url:u}).catch(()=>{});else{navigator.clipboard?.writeText(u);toast("Đã sao chép liên kết")}}
+
+// ---- Giao diện ----
+function card(p,full){
+  const isS=saved.includes(p.id),ini=esc((p.ho_ten||"?").trim().split(" ").pop()[0]),pid=esc(JSON.stringify(p.id));
+  return `<div class="card"><div class="ph"><div class="av">${p.logo?`<img src="${esc(p.logo)}" alt="">`:ini}</div><div class="n"><b>${esc(p.ho_ten)}</b><div class="co">${esc(p.cong_ty)}</div></div>
+  <span class="badge ${p.loai=="ban"?"sell":""}">${p.loai=="ban"?"CẦN BÁN":"CẦN MUA"}</span></div>
+  <h3>${esc(p.tieu_de)}</h3><div class="desc ${full?"":"clip"}">${esc(p.mo_ta)}</div>
+  <div class="meta">${p.nganh?`<span>${esc(p.nganh)}</span>`:""}${p.khu_vuc?`<span>📍 ${esc(p.khu_vuc)}</span>`:""}${p.t?`<span>🕒 ${ago(p.t)}</span>`:""}</div>
+  <div class="acts"><button class="obtn" onclick='connect(${pid})'>🤝 Kết nối</button><button class="obtn" onclick='toggleSave(${pid})'>${isS?"🔖 Đã lưu":"🏷️ Lưu"}</button>
+  ${full?"":`<span class="more" onclick='openD(${pid})'>Xem chi tiết ›</span>`}</div></div>`;
+}
+function render(){
+  document.querySelectorAll("#seg div").forEach(d=>d.classList.toggle("on",d.dataset.v==st.type));
+  const NG=[...new Set(posts.filter(p=>p.loai==st.type).map(p=>p.nganh).filter(Boolean))];
+  if(st.nganh&&!NG.includes(st.nganh))st.nganh="";
+  $("#chips").innerHTML=`<div class="chip ${!st.nganh?"on":""}" data-n="">Tất cả</div>`+NG.map(n=>`<div class="chip ${st.nganh==n?"on":""}" data-n="${esc(n)}">${esc(n)}</div>`).join("");
+  document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>{st.nganh=c.dataset.n;render()});
+  const q=st.q.toLowerCase(),L=posts.filter(p=>p.loai==st.type&&(!st.nganh||p.nganh==st.nganh)&&(!q||[p.tieu_de,p.mo_ta,p.cong_ty,p.ho_ten,p.khu_vuc,p.nganh].join(" ").toLowerCase().includes(q))).sort((a,b)=>b.t-a.t);
+  $("#count").textContent=`${L.length} tin cần ${st.type=="mua"?"mua":"bán"}`;
+  $("#list").innerHTML=L.length?L.map(p=>card(p)).join(""):`<div class="empty">Chưa có nhu cầu phù hợp</div>`;
+  const SL=posts.filter(p=>saved.includes(p.id));
+  $("#savedList").innerHTML=SL.length?SL.map(p=>card(p)).join(""):`<div class="empty">Chưa lưu nhu cầu nào</div>`;
+}
+function toggleSave(id){saved=saved.includes(id)?saved.filter(x=>x!=id):[...saved,id];sv("gt_saved",saved);toast(saved.includes(id)?"Đã lưu":"Đã bỏ lưu");render();if($("#detail.on"))openD(id)}
+function openD(id){const p=P(id),pid=esc(JSON.stringify(id));
+  $("#detail").innerHTML=`<div class="top"><button class="ib" onclick="go('cho')">‹</button><div class="mid"><h1>Chi tiết nhu cầu</h1><small>${p.loai=="ban"?"II. Nhu cầu bán":"I. Nhu cầu mua"}</small></div><button class="ib" onclick='share(${pid})'>↗</button></div>${card(p,true)}`;
+  go("detail")}
+function toggleSearch(){const i=$("#q");i.style.display=i.style.display=="none"?"block":"none";if(i.style.display=="block")i.focus()}
+function go(p){
+  document.querySelectorAll(".page").forEach(e=>e.classList.toggle("on",e.id==p));
+  const tab=p=="detail"?"cho":p;document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.p==tab));
+  render();scrollTo(0,0);
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.p));
+document.querySelectorAll("#seg div").forEach(d=>d.onclick=()=>{st.type=d.dataset.v;st.nganh="";render()});
+$("#q").oninput=e=>{st.q=e.target.value;render()};
+load();
+</script>
+</body>
+</html>
