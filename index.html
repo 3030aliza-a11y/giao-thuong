@@ -57,7 +57,7 @@ label{display:block;color:var(--mut);font-size:13px;margin:12px 0 6px}
 
 <!-- GIAO THƯƠNG -->
 <section class="page on" id="cho">
-  <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">🤝</div><div class="mid"><h1>Nhu cầu Mua / Bán</h1><small>Cơ khí – Điện phục vụ các ngành</small></div><button class="ib" onclick="toggleSearch()">🔍</button></div>
+  <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">🤝</div><div class="mid"><h1>Nhu cầu Mua / Bán</h1><small>Kết nối nhu cầu giao thương trong Hiệp hội</small></div><button class="ib" onclick="toggleSearch()">🔍</button></div>
   <input id="q" placeholder="Tìm nhu cầu, doanh nghiệp, khu vực..." style="display:none">
   <div class="seg" id="seg"><div data-v="mua" class="on">I. NHU CẦU MUA</div><div data-v="ban">II. NHU CẦU BÁN</div></div>
   <div class="chips" id="chips"></div>
@@ -100,20 +100,20 @@ const OA_ID="";            // ID Zalo OA HAMEE (lấy ở oa.zalo.me → Thông 
 const OA_LINK="https://zalo.me/s/4132427223821259878/";  // link Zalo OA (ví dụ https://zalo.me/xxxxxxxx), dùng khi ngoài Zalo
 /* ================================================================== */
 
-const LV=["Cơ khí chế tạo máy","Gia công cơ khí chính xác","Khuôn mẫu và Công nghiệp hỗ trợ (CNHT)","Kết cấu thép","Sản xuất thiết bị điện - điều khiển - tự động hoá - công nghệ số","Tổng thầu cơ điện công trình (M&E) và lắp đặt hệ thống","Thiết bị và giải pháp năng lượng – môi trường","Ngành nông lâm thuỷ hải sản LTTP","Ngành cao su nhựa","Ngành chế biến gỗ","Truyền thông sự kiện - nghiên cứu thị trường"];
-const LV_NGAN=["Chế tạo máy","Gia công chính xác","Khuôn mẫu & CNHT","Kết cấu thép","Điện – Tự động hoá – CN số","Tổng thầu M&E","Năng lượng – Môi trường","Nông lâm thuỷ hải sản LTTP","Cao su nhựa","Chế biến gỗ","Truyền thông – Nghiên cứu TT"];
-// Sheet ghi số nhóm (1–11) hoặc tên nhóm đều được
+const LV=["Nhóm truyền thông - sự kiện - nghiên cứu","Nhóm ngành cơ khí - điện","Nhóm ngành xây dựng","Nhóm ngành chế biến gỗ","Nhóm ngành cao su nhựa","Nông lâm thuỷ hải sản"];
+const LV_NGAN=["Truyền thông - Sự kiện - Nghiên cứu","Cơ khí - Điện","Xây dựng","Chế biến gỗ","Cao su nhựa","Nông lâm thuỷ hải sản"];
+// Sheet ghi số nhóm (1–6) hoặc tên nhóm đều được
 function nhom(p){const v=(p.linh_vuc||p.nganh||"").trim();const n=parseInt(v.replace(/[()]/g,""));if(n>=1&&n<=LV.length)return n-1;
   const i=LV.findIndex(x=>x.toLowerCase()==v.toLowerCase());return i>=0?i:LV.findIndex(x=>v&&x.toLowerCase().includes(v.toLowerCase()))}
 const D=864e5,now=Date.now();
 const SEED=[
-{loai:"mua",ho_ten:"Phạm Văn Tuyến",cong_ty:"Công ty TNHH Cơ Điện Hàn Sinh",tieu_de:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",mo_ta:"Thi công trọn gói hệ thống điện, nước, PCCC cho nhà xưởng mới tại Bình Tân.",linh_vuc:"6",khu_vuc:"Quận Bình Tân, TP.HCM",sdt:"0900000002",t:now-8*D},
+{loai:"mua",ho_ten:"Phạm Văn Tuyến",cong_ty:"Công ty TNHH Cơ Điện Hàn Sinh",tieu_de:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",mo_ta:"Thi công trọn gói hệ thống điện, nước, PCCC cho nhà xưởng mới tại Bình Tân.",linh_vuc:"2",khu_vuc:"Quận Bình Tân, TP.HCM",sdt:"0900000002",t:now-8*D},
 {loai:"mua",ho_ten:"Lê Quốc Bảo",cong_ty:"Công ty CP Thiết Bị Công Nghiệp Bảo An",tieu_de:"Cần đặt gia công 5.000 chi tiết trục inox theo bản vẽ",mo_ta:"Inox 304, dung sai ±0.01mm, giao trong 30 ngày.",linh_vuc:"2",khu_vuc:"Thủ Đức, TP.HCM",sdt:"0900000003",t:now-6*D},
-{loai:"mua",ho_ten:"Đinh Thị Bích Châu",cong_ty:"Công ty CP Topps Hoanchau",tieu_de:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",mo_ta:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng.",linh_vuc:"8",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000004",t:now-8*D},
-{loai:"mua",ho_ten:"Võ Thành Nam",cong_ty:"Công ty TNHH Xây Dựng Nam Phát",tieu_de:"Tìm nhà thầu kết cấu thép nhà xưởng 5.000 m²",mo_ta:"Thiết kế – gia công – lắp dựng khung thép tiền chế tại Long An.",linh_vuc:"4",khu_vuc:"Long An",sdt:"0900000005",t:now-4*D},
+{loai:"mua",ho_ten:"Đinh Thị Bích Châu",cong_ty:"Công ty CP Topps Hoanchau",tieu_de:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",mo_ta:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng.",linh_vuc:"6",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000004",t:now-8*D},
+{loai:"mua",ho_ten:"Võ Thành Nam",cong_ty:"Công ty TNHH Xây Dựng Nam Phát",tieu_de:"Tìm nhà thầu kết cấu thép nhà xưởng 5.000 m²",mo_ta:"Thiết kế – gia công – lắp dựng khung thép tiền chế tại Long An.",linh_vuc:"3",khu_vuc:"Long An",sdt:"0900000005",t:now-4*D},
 {loai:"ban",ho_ten:"Nguyễn Minh Khoa",cong_ty:"Công ty TNHH Gia Công Cơ Khí MK",website:"cokhimk.vn",linh_vuc:"2",san_pham:"Chi tiết máy, khuôn mẫu, gia công CNC",tieu_de:"Nhận gia công CNC, tiện phay chính xác theo bản vẽ",mo_ta:"Ưu đãi cho hội viên. Nhận đơn số lượng nhỏ, giao nhanh.",khu_vuc:"Quận 12, TP.HCM",sdt:"0900000006",t:now-3*D},
-{loai:"ban",ho_ten:"Trần Thanh Hà",cong_ty:"Công ty CP Tự Động Hoá Hà Phát",website:"haphat-auto.vn",linh_vuc:"5",san_pham:"Tủ điện điều khiển, PLC, SCADA",tieu_de:"Cung cấp tủ điện điều khiển & giải pháp tự động hoá nhà máy",mo_ta:"Thiết kế, lắp đặt, bảo trì. Giá ưu đãi hội viên.",khu_vuc:"Quận 7, TP.HCM",sdt:"0900000007",t:now-5*D},
-{loai:"ban",ho_ten:"Huỳnh Văn Lộc",cong_ty:"Công ty TNHH Năng Lượng Xanh Lộc Phát",linh_vuc:"7",san_pham:"Điện mặt trời áp mái, hệ thống xử lý nước thải",tieu_de:"Lắp điện mặt trời áp mái cho nhà xưởng – trả góp 0%",mo_ta:"Khảo sát miễn phí, hoàn vốn 4–5 năm.",khu_vuc:"Bình Dương",sdt:"0900000008",t:now-2*D}];
+{loai:"ban",ho_ten:"Trần Thanh Hà",cong_ty:"Công ty CP Tự Động Hoá Hà Phát",website:"haphat-auto.vn",linh_vuc:"2",san_pham:"Tủ điện điều khiển, PLC, SCADA",tieu_de:"Cung cấp tủ điện điều khiển & giải pháp tự động hoá nhà máy",mo_ta:"Thiết kế, lắp đặt, bảo trì. Giá ưu đãi hội viên.",khu_vuc:"Quận 7, TP.HCM",sdt:"0900000007",t:now-5*D},
+{loai:"ban",ho_ten:"Huỳnh Văn Lộc",cong_ty:"Công ty TNHH Năng Lượng Xanh Lộc Phát",linh_vuc:"2",san_pham:"Điện mặt trời áp mái, hệ thống xử lý nước thải",tieu_de:"Lắp điện mặt trời áp mái cho nhà xưởng – trả góp 0%",mo_ta:"Khảo sát miễn phí, hoàn vốn 4–5 năm.",khu_vuc:"Bình Dương",sdt:"0900000008",t:now-2*D}];
 
 const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
 const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -155,7 +155,7 @@ async function send(data){
 }
 function me(){return ld("gt_me",{})}
 function field(id,label,ph,v,type,area){return `<label>${label}</label>${area?`<textarea id="${id}" rows="4" placeholder="${ph}">${esc(v)}</textarea>`:`<input id="${id}" type="${type||"text"}" placeholder="${ph}" value="${esc(v)}">`}`}
-function lvSelect(id,v,lab){return `<label>${lab||"Ngành nghề *"}</label><select id="${id}"><option value="">— Chọn ngành nghề —</option><optgroup label="CHUYÊN NGÀNH CƠ KHÍ – ĐIỆN">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(0,7)}</optgroup><optgroup label="NGÀNH PHỤC VỤ">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(7,LV.length)}</optgroup></select>`}
+function lvSelect(id,v,lab){return `<label>${lab||"Ngành nghề *"}</label><select id="${id}"><option value="">— Chọn ngành nghề —</option>${LV.map((x,i)=>`<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`).join("")}</select>`}
 function modal(html){$("#mbody").innerHTML=html;$("#modal").style.display="flex"}
 function closeM(){$("#modal").style.display="none"}
 const val=i=>($(i)?.value||"").trim();
@@ -202,7 +202,7 @@ function card(p,full){
 }
 function render(){
   document.querySelectorAll("#seg div").forEach(d=>d.classList.toggle("on",d.dataset.v==st.type));
-  $("#chips").innerHTML=`<div class="chip ${st.nhom<0?"on":""}" data-n="-1">Tất cả</div>`+LV_NGAN.map((n,i)=>(i==0?`<div class="grp">Cơ khí – Điện</div>`:i==7?`<div class="grp">Ngành phục vụ</div>`:"")+`<div class="chip ${st.nhom==i?"on":""}" data-n="${i}">(${i+1}) ${esc(n)}</div>`).join("");
+  $("#chips").innerHTML=`<div class="chip ${st.nhom<0?"on":""}" data-n="-1">Tất cả</div>`+LV_NGAN.map((n,i)=>`<div class="chip ${st.nhom==i?"on":""}" data-n="${i}">(${i+1}) ${esc(n)}</div>`).join("");
   document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>{st.nhom=+c.dataset.n;render()});
   const q=st.q.toLowerCase(),L=posts.filter(p=>p.loai==st.type&&(st.nhom<0||p.nhom==st.nhom)&&(!q||[p.tieu_de,p.mo_ta,p.cong_ty,p.ho_ten,p.khu_vuc,LV[p.nhom],p.san_pham].join(" ").toLowerCase().includes(q))).sort((a,b)=>b.t-a.t);
   $("#count").textContent=`${L.length} tin cần ${st.type=="mua"?"mua":"bán"}`;
