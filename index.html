@@ -155,14 +155,14 @@ async function send(data){
 }
 function me(){return ld("gt_me",{})}
 function field(id,label,ph,v,type,area){return `<label>${label}</label>${area?`<textarea id="${id}" rows="4" placeholder="${ph}">${esc(v)}</textarea>`:`<input id="${id}" type="${type||"text"}" placeholder="${ph}" value="${esc(v)}">`}`}
-function lvSelect(id,v){return `<label>Lĩnh vực hoạt động *</label><select id="${id}"><option value="">— Chọn nhóm ngành —</option><optgroup label="CHUYÊN NGÀNH CƠ KHÍ – ĐIỆN">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(0,7)}</optgroup><optgroup label="NGÀNH PHỤC VỤ">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(7,LV.length)}</optgroup></select>`}
+function lvSelect(id,v,lab){return `<label>${lab||"Ngành nghề *"}</label><select id="${id}"><option value="">— Chọn ngành nghề —</option><optgroup label="CHUYÊN NGÀNH CƠ KHÍ – ĐIỆN">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(0,7)}</optgroup><optgroup label="NGÀNH PHỤC VỤ">${((a,b)=>LV.slice(a,b).map((x,j)=>{const i=a+j;return `<option value="${i}" ${v===String(i)?"selected":""}>(${i+1}) ${esc(x)}</option>`}).join(""))(7,LV.length)}</optgroup></select>`}
 function modal(html){$("#mbody").innerHTML=html;$("#modal").style.display="flex"}
 function closeM(){$("#modal").style.display="none"}
 const val=i=>($(i)?.value||"").trim();
 function connect(id){const p=P(id),m=me();
   modal(`<h3 style="margin:0 0 4px">Kết nối giao thương</h3><div class="mut" style="font-size:13px">Ban quản trị HAMEE sẽ liên hệ và kết nối anh/chị với <b>${esc(p.cong_ty)}</b> về:<br>“${esc(p.tieu_de)}”</div>
   ${field("cN","Họ tên *","Nguyễn Văn A",m.ten)}${field("cC","Doanh nghiệp *","Công ty...",m.cty)}${field("cP","Số điện thoại / Zalo *","09xxxxxxxx",m.sdt,"tel")}${field("cE","Email","email@congty.vn",m.email,"email")}
-  ${field("cW","Website công ty","congty.vn",m.web)}${lvSelect("cL",m.lv)}${field("cS","Sản phẩm / dịch vụ","VD: Khuôn mẫu, chi tiết máy...",m.sp,0,1)}
+  ${field("cW","Website công ty","congty.vn",m.web)}${lvSelect("cL",m.lv,"Ngành nghề doanh nghiệp *")}${field("cS","Sản phẩm / dịch vụ","VD: Khuôn mẫu, chi tiết máy...",m.sp,0,1)}
   ${field("cM","Lời nhắn","Nội dung muốn trao đổi...","",0,1)}<button class="btn" style="margin-top:16px" onclick='submitContact(${esc(JSON.stringify(id))})'>Gửi yêu cầu kết nối</button>`)}
 async function submitContact(id){const p=P(id),d={ten:val("#cN"),cty:val("#cC"),sdt:val("#cP"),email:val("#cE"),web:val("#cW"),lv:val("#cL"),sp:val("#cS")};
   if(!d.ten||!d.cty||!/^0\d{9,10}$/.test(d.sdt)||d.lv==="")return toast("Nhập đủ các mục *, SĐT đúng");
@@ -176,7 +176,7 @@ function openPost(){const m=me();
   ${field("pTi","Tiêu đề *","VD: Cần mua thép tấm SS400 số lượng lớn","")}${field("pD","Mô tả chi tiết","Số lượng, tiêu chuẩn, thời gian...","",0,1)}
   ${field("pK","Khu vực","VD: Quận 12, TP.HCM","")}
   ${field("pN","Họ tên *","",m.ten)}${field("pC","Doanh nghiệp *","",m.cty)}${field("pP","Số điện thoại / Zalo *","",m.sdt,"tel")}${field("pE","Email","",m.email,"email")}
-  ${field("pW","Website công ty","congty.vn",m.web)}${lvSelect("pL",m.lv)}${field("pS","Sản phẩm / dịch vụ","VD: Tủ điện, máng cáp...",m.sp,0,1)}
+  ${field("pW","Website công ty","congty.vn",m.web)}${lvSelect("pL",m.lv,`Ngành nghề * <span style="font-size:12px">(để phân loại nhu cầu)</span>`)}${field("pS","Sản phẩm / dịch vụ","VD: Tủ điện, máng cáp...",m.sp,0,1)}
   <button class="btn" style="margin-top:16px" onclick="submitPost()">Gửi duyệt</button>`);
   document.querySelectorAll("#pT div").forEach(d=>d.onclick=()=>document.querySelectorAll("#pT div").forEach(x=>x.classList.toggle("on",x==d)))}
 async function submitPost(){const d={ten:val("#pN"),cty:val("#pC"),sdt:val("#pP"),email:val("#pE"),web:val("#pW"),lv:val("#pL"),sp:val("#pS")};

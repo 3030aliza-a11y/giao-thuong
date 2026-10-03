@@ -27,7 +27,7 @@ function doPost(e) {
     MailApp.sendEmail({
       to: EMAIL_HAMEE,
       subject: `[GIAO THƯƠNG] Tin chờ duyệt – ${d.loai === "mua" ? "CẦN MUA" : "CẦN BÁN"}: ${d.tieu_de}`,
-      body: `Có tin mới cần duyệt (${now})\n\nLoại: ${d.loai === "mua" ? "I. Nhu cầu mua" : "II. Nhu cầu bán"}\nTiêu đề: ${d.tieu_de}\nMô tả: ${d.mo_ta}\nNgành: ${d.nganh}\nKhu vực: ${d.khu_vuc}\n\nNgười gửi: ${d.ten}\nDoanh nghiệp: ${d.cty}\nSĐT/Zalo: ${d.sdt}\nEmail: ${d.email}\nWebsite: ${d.web}\nLĩnh vực hoạt động: ${d.lv}\nSản phẩm: ${d.sp}\n\n→ Duyệt: mở Google Sheet, tab TinDang, đổi cột trang_thai thành "duyet".\n${ss.getUrl()}`
+      body: `Có tin mới cần duyệt (${now})\n\nLoại: ${d.loai === "mua" ? "I. Nhu cầu mua" : "II. Nhu cầu bán"}\nTiêu đề: ${d.tieu_de}\nMô tả: ${d.mo_ta}\nNgành: ${d.nganh}\nKhu vực: ${d.khu_vuc}\n\nNgười gửi: ${d.ten}\nDoanh nghiệp: ${d.cty}\nSĐT/Zalo: ${d.sdt}\nEmail: ${d.email}\nWebsite: ${d.web}\nNgành nghề: ${d.lv}\nSản phẩm: ${d.sp}\n\n→ Duyệt: mở Google Sheet, tab TinDang, đổi cột trang_thai thành "duyet".\n${ss.getUrl()}`
     });
   }
 
@@ -36,7 +36,7 @@ function doPost(e) {
     MailApp.sendEmail({
       to: EMAIL_HAMEE,
       subject: `[GIAO THƯƠNG] Yêu cầu kết nối: ${d.tin}`,
-      body: `Có hội viên muốn kết nối (${now})\n\nNgười liên hệ: ${d.ten}\nDoanh nghiệp: ${d.cty}\nSĐT/Zalo: ${d.sdt}\nEmail: ${d.email}\nWebsite: ${d.web}\nLĩnh vực hoạt động: ${d.lv}\nSản phẩm: ${d.sp}\nLời nhắn: ${d.loi_nhan}\n\nQuan tâm tin: ${d.tin} (${d.loai === "mua" ? "Cần mua" : "Cần bán"})\nBên đăng: ${d.nguoi_dang} – ${d.cong_ty_dang} – ${d.sdt_nguoi_dang}`
+      body: `Có hội viên muốn kết nối (${now})\n\nNgười liên hệ: ${d.ten}\nDoanh nghiệp: ${d.cty}\nSĐT/Zalo: ${d.sdt}\nEmail: ${d.email}\nWebsite: ${d.web}\nNgành nghề: ${d.lv}\nSản phẩm: ${d.sp}\nLời nhắn: ${d.loi_nhan}\n\nQuan tâm tin: ${d.tin} (${d.loai === "mua" ? "Cần mua" : "Cần bán"})\nBên đăng: ${d.nguoi_dang} – ${d.cong_ty_dang} – ${d.sdt_nguoi_dang}`
     });
   }
   return ContentService.createTextOutput("ok");
