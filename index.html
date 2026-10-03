@@ -100,9 +100,9 @@ const OA_ID="";            // ID Zalo OA HAMEE (lấy ở oa.zalo.me → Thông 
 const OA_LINK="https://zalo.me/s/4132427223821259878/";  // link Zalo OA (ví dụ https://zalo.me/xxxxxxxx), dùng khi ngoài Zalo
 /* ================================================================== */
 
-const LV=["Nhóm truyền thông - sự kiện - nghiên cứu","Nhóm ngành cơ khí - điện","Nhóm ngành xây dựng","Nhóm ngành chế biến gỗ","Nhóm ngành cao su nhựa","Nông lâm thuỷ hải sản"];
-const LV_NGAN=["Truyền thông - Sự kiện - Nghiên cứu","Cơ khí - Điện","Xây dựng","Chế biến gỗ","Cao su nhựa","Nông lâm thuỷ hải sản"];
-// Sheet ghi số nhóm (1–6) hoặc tên nhóm đều được
+const LV=["Nhóm truyền thông - sự kiện - nghiên cứu","Nhóm ngành cơ khí - điện","Nhóm ngành xây dựng","Nhóm ngành chế biến gỗ","Nhóm ngành cao su nhựa","Nông lâm thuỷ hải sản","Nhóm ngành vận tải - logistics","Nhóm ngành điện tử - bán dẫn"];
+const LV_NGAN=["Truyền thông - Sự kiện - Nghiên cứu","Cơ khí - Điện","Xây dựng","Chế biến gỗ","Cao su nhựa","Nông lâm thuỷ hải sản","Vận tải - Logistics","Điện tử - Bán dẫn"];
+// Sheet ghi số nhóm (1–8) hoặc tên nhóm đều được
 function nhom(p){const v=(p.linh_vuc||p.nganh||"").trim();const n=parseInt(v.replace(/[()]/g,""));if(n>=1&&n<=LV.length)return n-1;
   const i=LV.findIndex(x=>x.toLowerCase()==v.toLowerCase());return i>=0?i:LV.findIndex(x=>v&&x.toLowerCase().includes(v.toLowerCase()))}
 const D=864e5,now=Date.now();
