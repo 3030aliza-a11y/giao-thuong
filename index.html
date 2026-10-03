@@ -100,20 +100,20 @@ const OA_ID="";            // ID Zalo OA HAMEE (lấy ở oa.zalo.me → Thông 
 const OA_LINK="https://zalo.me/s/4132427223821259878/";  // link Zalo OA (ví dụ https://zalo.me/xxxxxxxx), dùng khi ngoài Zalo
 /* ================================================================== */
 
-const LV=["Nhóm truyền thông - sự kiện - nghiên cứu","Nhóm ngành cơ khí - điện","Nhóm ngành xây dựng","Nhóm ngành chế biến gỗ","Nhóm ngành cao su nhựa","Nông lâm thuỷ hải sản","Nhóm ngành vận tải - logistics","Nhóm ngành điện tử - bán dẫn"];
-const LV_NGAN=["Truyền thông - Sự kiện - Nghiên cứu","Cơ khí - Điện","Xây dựng","Chế biến gỗ","Cao su nhựa","Nông lâm thuỷ hải sản","Vận tải - Logistics","Điện tử - Bán dẫn"];
+const LV=["Cơ khí - điện - năng lượng","Tự động hoá - công nghệ số","Vận tải - logistics","Xây dựng","Cao su nhựa","Chế biến gỗ","Nông lâm thuỷ hải sản","Truyền thông - nghiên cứu"];
+const LV_NGAN=LV;
 // Sheet ghi số nhóm (1–8) hoặc tên nhóm đều được
 function nhom(p){const v=(p.linh_vuc||p.nganh||"").trim();const n=parseInt(v.replace(/[()]/g,""));if(n>=1&&n<=LV.length)return n-1;
   const i=LV.findIndex(x=>x.toLowerCase()==v.toLowerCase());return i>=0?i:LV.findIndex(x=>v&&x.toLowerCase().includes(v.toLowerCase()))}
 const D=864e5,now=Date.now();
 const SEED=[
-{loai:"mua",ho_ten:"Phạm Văn Tuyến",cong_ty:"Công ty TNHH Cơ Điện Hàn Sinh",tieu_de:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",mo_ta:"Thi công trọn gói hệ thống điện, nước, PCCC cho nhà xưởng mới tại Bình Tân.",linh_vuc:"2",khu_vuc:"Quận Bình Tân, TP.HCM",sdt:"0900000002",t:now-8*D},
-{loai:"mua",ho_ten:"Lê Quốc Bảo",cong_ty:"Công ty CP Thiết Bị Công Nghiệp Bảo An",tieu_de:"Cần đặt gia công 5.000 chi tiết trục inox theo bản vẽ",mo_ta:"Inox 304, dung sai ±0.01mm, giao trong 30 ngày.",linh_vuc:"2",khu_vuc:"Thủ Đức, TP.HCM",sdt:"0900000003",t:now-6*D},
-{loai:"mua",ho_ten:"Đinh Thị Bích Châu",cong_ty:"Công ty CP Topps Hoanchau",tieu_de:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",mo_ta:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng.",linh_vuc:"6",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000004",t:now-8*D},
-{loai:"mua",ho_ten:"Võ Thành Nam",cong_ty:"Công ty TNHH Xây Dựng Nam Phát",tieu_de:"Tìm nhà thầu kết cấu thép nhà xưởng 5.000 m²",mo_ta:"Thiết kế – gia công – lắp dựng khung thép tiền chế tại Long An.",linh_vuc:"3",khu_vuc:"Long An",sdt:"0900000005",t:now-4*D},
-{loai:"ban",ho_ten:"Nguyễn Minh Khoa",cong_ty:"Công ty TNHH Gia Công Cơ Khí MK",website:"cokhimk.vn",linh_vuc:"2",san_pham:"Chi tiết máy, khuôn mẫu, gia công CNC",tieu_de:"Nhận gia công CNC, tiện phay chính xác theo bản vẽ",mo_ta:"Ưu đãi cho hội viên. Nhận đơn số lượng nhỏ, giao nhanh.",khu_vuc:"Quận 12, TP.HCM",sdt:"0900000006",t:now-3*D},
+{loai:"mua",ho_ten:"Phạm Văn Tuyến",cong_ty:"Công ty TNHH Cơ Điện Hàn Sinh",tieu_de:"Tìm đơn vị thi công điện nước cho nhà xưởng 2.000 m²",mo_ta:"Thi công trọn gói hệ thống điện, nước, PCCC cho nhà xưởng mới tại Bình Tân.",linh_vuc:"1",khu_vuc:"Quận Bình Tân, TP.HCM",sdt:"0900000002",t:now-8*D},
+{loai:"mua",ho_ten:"Lê Quốc Bảo",cong_ty:"Công ty CP Thiết Bị Công Nghiệp Bảo An",tieu_de:"Cần đặt gia công 5.000 chi tiết trục inox theo bản vẽ",mo_ta:"Inox 304, dung sai ±0.01mm, giao trong 30 ngày.",linh_vuc:"1",khu_vuc:"Thủ Đức, TP.HCM",sdt:"0900000003",t:now-6*D},
+{loai:"mua",ho_ten:"Đinh Thị Bích Châu",cong_ty:"Công ty CP Topps Hoanchau",tieu_de:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng",mo_ta:"Cần mua nông sản sấy khô số lượng lớn, giao hàng tháng.",linh_vuc:"7",khu_vuc:"Quận 11, TP.HCM",sdt:"0900000004",t:now-8*D},
+{loai:"mua",ho_ten:"Võ Thành Nam",cong_ty:"Công ty TNHH Xây Dựng Nam Phát",tieu_de:"Tìm nhà thầu kết cấu thép nhà xưởng 5.000 m²",mo_ta:"Thiết kế – gia công – lắp dựng khung thép tiền chế tại Long An.",linh_vuc:"4",khu_vuc:"Long An",sdt:"0900000005",t:now-4*D},
+{loai:"ban",ho_ten:"Nguyễn Minh Khoa",cong_ty:"Công ty TNHH Gia Công Cơ Khí MK",website:"cokhimk.vn",linh_vuc:"1",san_pham:"Chi tiết máy, khuôn mẫu, gia công CNC",tieu_de:"Nhận gia công CNC, tiện phay chính xác theo bản vẽ",mo_ta:"Ưu đãi cho hội viên. Nhận đơn số lượng nhỏ, giao nhanh.",khu_vuc:"Quận 12, TP.HCM",sdt:"0900000006",t:now-3*D},
 {loai:"ban",ho_ten:"Trần Thanh Hà",cong_ty:"Công ty CP Tự Động Hoá Hà Phát",website:"haphat-auto.vn",linh_vuc:"2",san_pham:"Tủ điện điều khiển, PLC, SCADA",tieu_de:"Cung cấp tủ điện điều khiển & giải pháp tự động hoá nhà máy",mo_ta:"Thiết kế, lắp đặt, bảo trì. Giá ưu đãi hội viên.",khu_vuc:"Quận 7, TP.HCM",sdt:"0900000007",t:now-5*D},
-{loai:"ban",ho_ten:"Huỳnh Văn Lộc",cong_ty:"Công ty TNHH Năng Lượng Xanh Lộc Phát",linh_vuc:"2",san_pham:"Điện mặt trời áp mái, hệ thống xử lý nước thải",tieu_de:"Lắp điện mặt trời áp mái cho nhà xưởng – trả góp 0%",mo_ta:"Khảo sát miễn phí, hoàn vốn 4–5 năm.",khu_vuc:"Bình Dương",sdt:"0900000008",t:now-2*D}];
+{loai:"ban",ho_ten:"Huỳnh Văn Lộc",cong_ty:"Công ty TNHH Năng Lượng Xanh Lộc Phát",linh_vuc:"1",san_pham:"Điện mặt trời áp mái, hệ thống xử lý nước thải",tieu_de:"Lắp điện mặt trời áp mái cho nhà xưởng – trả góp 0%",mo_ta:"Khảo sát miễn phí, hoàn vốn 4–5 năm.",khu_vuc:"Bình Dương",sdt:"0900000008",t:now-2*D}];
 
 const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
 const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
