@@ -264,7 +264,7 @@ renderHV();
 load();
 
 // 2 trang song song: mặc định = GIAO THƯƠNG; ?view=hoivien (hoặc /hoivien/) = THÔNG TIN HỘI VIÊN
-(()=>{const v=new URLSearchParams(location.search).get("view");
+(()=>{const v=new URLSearchParams(location.search).get("view")||window.DEFAULT_VIEW;
   if(v=="hoivien"){document.title="HỘI VIÊN HAMEE";document.querySelector("nav").style.display="none";document.body.style.paddingBottom="16px";go("hv")}
   else{document.querySelector('nav button[data-p="hv"]').style.display="none"}})();
 </script>
