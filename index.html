@@ -262,6 +262,11 @@ renderHV();
   if(r.ok&&r.hv&&r.hv.length){HV=r.hv.map((m,i)=>({i,ten:m.ten,dc:m.dia_chi,email:m.email,sdt:m.sdt,logo:m.logo,url:m.url_hamee,gt:m.gioi_thieu,web:m.website,sp:m.san_pham,
     ng:String(m.nhom||"").split(/[,;\s]+/).map(Number).filter(n=>n>=1&&n<=NG14.length)}));renderHV()}}catch(e){}})();
 load();
+
+// Mở thẳng một phần: ?view=hoivien (chỉ Hội viên) · ?view=giaothuong (chỉ Giao thương)
+(()=>{const v=new URLSearchParams(location.search).get("view");
+  if(v=="hoivien"){document.title="HỘI VIÊN HAMEE";document.querySelector("nav").style.display="none";document.body.style.paddingBottom="16px";go("hv")}
+  else if(v=="giaothuong"){document.querySelector('nav button[data-p="hv"]').style.display="none"}})();
 </script>
 </body>
 </html>
