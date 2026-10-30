@@ -13,10 +13,22 @@
  *
  * DUYỆT TIN: tin hội viên gửi có trang_thai = "cho_duyet". Admin đổi thành "duyet" là tin hiện trên app.
  * ADMIN TỰ ĐĂNG: nhập thẳng 1 dòng vào tab TinDang, trang_thai = "duyet".
+ * HỘI VIÊN: tab "HoiVien" (tự tạo khi nhập dữ liệu lần đầu). App đọc qua link Web App ?action=hv.
  * TRANG QUẢN TRỊ: admin.html — đăng nhập bằng ADMIN_KEY bên dưới (đổi thành mật khẩu riêng, không chia sẻ).
  */
 const ADMIN_KEY = "DOI_MAT_KHAU_O_DAY"; // ← mật khẩu trang quản trị
 const EMAIL_HAMEE = "hoicokhidien@gmail.com"; // ← email nhận thông báo (nhiều email cách nhau dấu phẩy)
+
+const HV_HEAD = ["ten", "nhom", "dia_chi", "sdt", "email", "website", "logo", "url_hamee", "gioi_thieu", "san_pham", "trang_thai"];
+
+function doGet(e) {
+  if (e.parameter.action === "hv") {
+    const sh = SpreadsheetApp.getActive().getSheetByName("HoiVien");
+    const L = sh ? rows(sh).filter(r => r.trang_thai !== "an").map(r => { delete r._row; return r; }) : [];
+    return json({ ok: true, hv: L });
+  }
+  return ContentService.createTextOutput("ok");
+}
 
 function doPost(e) {
   const d = JSON.parse(e.postData.contents);
@@ -53,14 +65,28 @@ function rows(sh) {
 }
 function admin(d, ss, ngay) {
   if (!ADMIN_KEY || ADMIN_KEY === "DOI_MAT_KHAU_O_DAY" || d.key !== ADMIN_KEY) return { ok: false, error: "Sai mật khẩu" };
-  const tin = ss.getSheetByName("TinDang");
-  const head = tin.getRange(1, 1, 1, tin.getLastColumn()).getValues()[0];
+  if (d.action === "admin_list") {
+    const hv = ss.getSheetByName("HoiVien");
+    return { ok: true, tin: rows(ss.getSheetByName("TinDang")), ketnoi: rows(ss.getSheetByName("KetNoi")), hv: hv ? rows(hv) : [] };
+  }
+  if (d.action === "admin_hv_import") {
+    let sh = ss.getSheetByName("HoiVien");
+    if (!sh) sh = ss.insertSheet("HoiVien");
+    if (d.replace) sh.clear();
+    if (sh.getLastRow() === 0) { sh.appendRow(HV_HEAD); sh.getRange(1, 1, 1, HV_HEAD.length).setFontWeight("bold").setBackground("#1565d8").setFontColor("#ffffff"); sh.setFrozenRows(1); }
+    const data = (d.rows || []).map(r => HV_HEAD.map(k => k === "sdt" && r[k] ? "'" + r[k] : (r[k] || "")));
+    if (data.length) sh.getRange(sh.getLastRow() + 1, 1, data.length, HV_HEAD.length).setValues(data);
+    return { ok: true, added: data.length };
+  }
+  const name = d.sheet === "HoiVien" ? "HoiVien" : "TinDang", key = name === "HoiVien" ? "ten" : "tieu_de";
+  const sh = ss.getSheetByName(name);
+  if (!sh) return { ok: false, error: "Chưa có tab " + name };
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
   // kiểm tra đúng dòng trước khi sửa/xoá (tránh lệch dòng khi sheet vừa thay đổi)
-  const check = r => r >= 2 && r <= tin.getLastRow() && tin.getRange(r, head.indexOf("tieu_de") + 1).getDisplayValue() === d.tieu_de_cu;
-  if (d.action === "admin_list") return { ok: true, tin: rows(tin), ketnoi: rows(ss.getSheetByName("KetNoi")) };
+  const check = r => r >= 2 && r <= sh.getLastRow() && sh.getRange(r, head.indexOf(key) + 1).getDisplayValue() === d.tieu_de_cu;
   if (d.action === "admin_status") {
     if (!check(d.row)) return { ok: false, error: "Dữ liệu đã thay đổi, tải lại trang" };
-    tin.getRange(d.row, head.indexOf("trang_thai") + 1).setValue(d.trang_thai);
+    sh.getRange(d.row, head.indexOf("trang_thai") + 1).setValue(d.trang_thai);
     return { ok: true };
   }
   if (d.action === "admin_save") {
@@ -68,16 +94,16 @@ function admin(d, ss, ngay) {
     if (f.sdt) f.sdt = "'" + f.sdt;
     if (d.row) {
       if (!check(d.row)) return { ok: false, error: "Dữ liệu đã thay đổi, tải lại trang" };
-      Object.keys(f).forEach(k => { const c = head.indexOf(k); if (c >= 0) tin.getRange(d.row, c + 1).setValue(f[k]); });
+      Object.keys(f).forEach(k => { const c = head.indexOf(k); if (c >= 0) sh.getRange(d.row, c + 1).setValue(f[k]); });
     } else {
-      f.ngay_dang = f.ngay_dang || ngay; f.trang_thai = f.trang_thai || "duyet";
-      tin.appendRow(head.map(k => f[k] || ""));
+      if (name === "TinDang") { f.ngay_dang = f.ngay_dang || ngay; f.trang_thai = f.trang_thai || "duyet"; }
+      sh.appendRow(head.map(k => f[k] || ""));
     }
     return { ok: true };
   }
   if (d.action === "admin_delete") {
     if (!check(d.row)) return { ok: false, error: "Dữ liệu đã thay đổi, tải lại trang" };
-    tin.deleteRow(d.row);
+    sh.deleteRow(d.row);
     return { ok: true };
   }
   return { ok: false, error: "Không rõ thao tác" };
