@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Quản trị Giao Thương</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--pri:#1565d8;--pri2:#0b3b8c;--tx:#14213d;--tx2:#3b4a66;--mut:#6b7a90;--bd:#d6e6f5;--red:#e0475b;--grn:#12a36b;--org:#d9731c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Be Vietnam Pro",sans-serif;color:var(--tx);font-size:14px;min-height:100vh;background:linear-gradient(180deg,#0a4fb3 0,#1e9bd7 130px,#e9f3fb 130px);background-attachment:fixed}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+.top{display:flex;align-items:center;gap:10px;margin:4px 0 16px;color:#fff}
+.top h1{font-size:20px;font-weight:800;flex:1}.top small{display:block;font-size:12px;color:#dbeeff;font-weight:400}
+.ib{border:0;background:#ffffff33;color:#fff;border-radius:10px;padding:9px 12px;font-family:inherit;font-weight:600;cursor:pointer}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 4px 14px #0a4fb314}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;background:linear-gradient(90deg,#1e9bd7,#1565d8);color:#fff}
+.obtn{border:1px solid #b9d3f0;background:#f3f8fe;color:var(--pri);border-radius:10px;padding:8px 12px;font-weight:600;font-family:inherit;cursor:pointer;font-size:13px}
+.obtn.g{color:var(--grn);border-color:#9fdcc3;background:#e8f8f1}.obtn.r{color:var(--red);border-color:#f3c0c7;background:#fff5f6}.obtn.o{color:var(--org);border-color:#f7c89b;background:#fff4ea}
+.tabs{display:flex;gap:6px;background:#fff;border-radius:14px;padding:5px;margin-bottom:12px;box-shadow:0 4px 14px #0a4fb314;overflow-x:auto}
+.tabs div{flex:1;text-align:center;padding:10px 8px;border-radius:10px;font-weight:700;cursor:pointer;color:var(--tx2);white-space:nowrap}
+.tabs .on{background:linear-gradient(90deg,#1e9bd7,#1565d8);color:#fff}
+.tabs b{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:#e0475b;color:#fff;font-size:11px;margin-left:4px}
+.tabs .on b{background:#fff;color:var(--pri)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.badge{border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;letter-spacing:1px}
+.mua{color:var(--grn);background:#e8f8f1}.ban{color:var(--org);background:#fff4ea}
+.st{font-size:11px;font-weight:700;border-radius:8px;padding:3px 8px}.st.cho_duyet{background:#fff4d6;color:#a06b00}.st.duyet{background:#e8f8f1;color:var(--grn)}.st.an{background:#eef1f5;color:var(--mut)}
+.card h3{font-size:16px;color:var(--pri);margin:8px 0 4px;line-height:1.35}
+.mut{color:var(--mut)}.sm{font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:13px;color:var(--tx2);margin-top:8px;background:#f6faff;border-radius:10px;padding:10px}
+.grid span{color:var(--mut)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+input,select,textarea{width:100%;background:#f6faff;border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:10px;font-size:14px;font-family:inherit}
+label{display:block;color:var(--mut);font-size:12px;margin:10px 0 4px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+#modal{position:fixed;inset:0;background:#0b1a3a88;display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+.sheet{background:#fff;width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px;padding:20px}
+.sheet h2{color:var(--pri2);font-size:18px;margin-bottom:6px}
+.empty{text-align:center;color:var(--mut);padding:30px;background:#fff;border-radius:16px}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#0b3b8ce6;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:60;font-size:13px}
+.login{max-width:380px;margin:60px auto}
+@media(max-width:560px){.grid,.f2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>Quản trị Giao Thương<small>Duyệt, đăng và quản lý nhu cầu mua / bán</small></h1>
+    <button class="ib" id="btnReload" onclick="load()" style="display:none">⟳ Tải lại</button>
+    <button class="ib" id="btnOut" onclick="logout()" style="display:none">Đăng xuất</button></div>
+  <div id="app"></div>
+</div>
+<div id="modal"><div class="sheet" id="mbody"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbw72uZrrFxoprUDCSP66DlbqG2m3e9ND5wFRsFSlSG8MjIw_ZNkHOxCQtuu-7S3UYZNfw/exec";
+const LV=["Cơ khí - điện - năng lượng","Tự động hoá - công nghệ số","Vận tải - logistics","Xây dựng","Cao su nhựa","Chế biến gỗ","Nông lâm thuỷ hải sản","Truyền thông - nghiên cứu"];
+const ST={cho_duyet:"Chờ duyệt",duyet:"Đang hiển thị",an:"Đã ẩn"};
+
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const val=i=>($(i)?.value||"").trim();
+function toast(m){const e=$("#toast");e.textContent=m;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",2200)}
+let KEY="",data={tin:[],ketnoi:[]},tab="cho_duyet",q="";
+try{KEY=sessionStorage.getItem("gt_admin")||""}catch(e){}
+
+async function api(body){
+  const r=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({...body,key:KEY})});
+  return r.json();
+}
+function loginView(err){
+  $("#btnReload").style.display=$("#btnOut").style.display="none";
+  $("#app").innerHTML=`<div class="card login"><h2 style="color:var(--pri2);font-size:18px">Đăng nhập quản trị</h2>
+  <div class="mut sm" style="margin:4px 0 8px">Nhập mật khẩu Ban quản trị HAMEE.</div>
+  <input id="k" type="password" placeholder="Mật khẩu" onkeydown="if(event.key=='Enter')login()">
+  ${err?`<div style="color:var(--red);font-size:13px;margin-top:8px">${esc(err)}</div>`:""}
+  <button class="btn" style="width:100%;margin-top:12px" onclick="login()">Đăng nhập</button></div>`;
+  setTimeout(()=>$("#k")?.focus(),50);
+}
+async function login(){KEY=val("#k");if(!KEY)return;await load()}
+function logout(){KEY="";try{sessionStorage.removeItem("gt_admin")}catch(e){};loginView()}
+async function load(){
+  $("#app").innerHTML=`<div class="empty">Đang tải dữ liệu…</div>`;
+  let r;try{r=await api({action:"admin_list"})}catch(e){return loginView("Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.")}
+  if(!r.ok)return loginView(r.error);
+  try{sessionStorage.setItem("gt_admin",KEY)}catch(e){}
+  data=r;$("#btnReload").style.display=$("#btnOut").style.display="inline-block";render();
+}
+const stOf=t=>(t.trang_thai||"").trim()||"cho_duyet";
+function render(){
+  const cnt=k=>data.tin.filter(t=>stOf(t)==k).length;
+  const tabs=[["cho_duyet","Chờ duyệt",cnt("cho_duyet")],["duyet","Đang hiển thị",0],["an","Đã ẩn",0],["ketnoi","Yêu cầu kết nối",0]];
+  let html=`<div class="tabs">${tabs.map(([k,n,c])=>`<div class="${tab==k?"on":""}" onclick="tab='${k}';render()">${n}${c?`<b>${c}</b>`:""}</div>`).join("")}</div>
+  <div class="row" style="margin-bottom:12px"><input id="q" placeholder="Tìm theo tiêu đề, công ty, người đăng…" value="${esc(q)}" style="flex:1;background:#fff" oninput="q=this.value;renderList()">
+  ${tab!="ketnoi"?`<button class="btn" onclick="edit()">+ Đăng tin mới</button>`:""}</div><div id="list"></div>`;
+  $("#app").innerHTML=html;renderList();
+}
+function renderList(){
+  const s=q.toLowerCase(),m=o=>!s||Object.values(o).join(" ").toLowerCase().includes(s);
+  if(tab=="ketnoi"){
+    const L=data.ketnoi.filter(m).reverse();
+    $("#list").innerHTML=L.length?L.map(k=>`<div class="card"><div class="row"><span class="mut sm">🕒 ${esc(k.thoi_gian)}</span></div>
+      <h3>${esc(k.ho_ten)} – ${esc(k.cong_ty)}</h3>
+      <div class="grid"><div><span>SĐT/Zalo:</span> <a href="tel:${esc(k.sdt)}">${esc(k.sdt)}</a></div><div><span>Email:</span> ${esc(k.email)}</div>
+      <div><span>Ngành nghề:</span> ${esc(k.linh_vuc)}</div><div><span>Website:</span> ${esc(k.website)}</div>
+      <div style="grid-column:1/-1"><span>Lời nhắn:</span> ${esc(k.loi_nhan)}</div>
+      <div style="grid-column:1/-1"><span>Quan tâm tin:</span> <b>${esc(k.tin_quan_tam)}</b> (${k.loai=="ban"?"Cần bán":"Cần mua"})</div>
+      <div style="grid-column:1/-1"><span>Bên đăng:</span> ${esc(k.nguoi_dang)} – ${esc(k.cong_ty_dang)} – <a href="tel:${esc(k.sdt_nguoi_dang)}">${esc(k.sdt_nguoi_dang)}</a></div></div></div>`).join(""):`<div class="empty">Chưa có yêu cầu kết nối</div>`;
+    return;
+  }
+  const L=data.tin.filter(t=>stOf(t)==tab&&m(t)).reverse();
+  $("#list").innerHTML=L.length?L.map(t=>{const st=stOf(t);return `<div class="card">
+    <div class="row"><span class="badge ${t.loai=="ban"?"ban":"mua"}">${t.loai=="ban"?"CẦN BÁN":"CẦN MUA"}</span><span class="st ${st}">${ST[st]||st}</span><span class="mut sm">📅 ${esc(t.ngay_dang)}</span></div>
+    <h3>${esc(t.tieu_de)}</h3><div class="sm" style="color:var(--tx2);white-space:pre-wrap">${esc(t.mo_ta)}</div>
+    <div class="grid"><div><span>Người đăng:</span> ${esc(t.ho_ten)}</div><div><span>Công ty:</span> ${esc(t.cong_ty)}</div>
+    <div><span>SĐT/Zalo:</span> <a href="tel:${esc(t.sdt)}">${esc(t.sdt)}</a></div><div><span>Email:</span> ${esc(t.email)}</div>
+    <div><span>Ngành nghề:</span> ${esc(t.linh_vuc||t.nganh)}</div><div><span>Khu vực:</span> ${esc(t.khu_vuc)}</div>
+    ${t.website?`<div><span>Website:</span> ${esc(t.website)}</div>`:""}${t.san_pham?`<div><span>Sản phẩm:</span> ${esc(t.san_pham)}</div>`:""}</div>
+    <div class="acts">
+      ${st!="duyet"?`<button class="obtn g" onclick="setSt(${t._row},'duyet')">✓ Duyệt & hiển thị</button>`:""}
+      ${st=="duyet"?`<button class="obtn o" onclick="setSt(${t._row},'an')">Ẩn tin</button>`:""}
+      <button class="obtn" onclick="edit(${t._row})">✏️ Sửa</button>
+      <button class="obtn r" onclick="del(${t._row})">🗑 Xoá</button></div></div>`}).join(""):`<div class="empty">Không có tin nào</div>`;
+}
+const T=row=>data.tin.find(t=>t._row==row);
+async function run(body,msg){
+  try{const r=await api(body);if(!r.ok){toast(r.error);if(/mật khẩu/i.test(r.error))logout();else load();return}toast(msg);closeM();await load()}
+  catch(e){toast("Lỗi kết nối, thử lại")}
+}
+function setSt(row,s){run({action:"admin_status",row,trang_thai:s,tieu_de_cu:T(row).tieu_de},s=="duyet"?"Đã duyệt – tin hiện trên app sau khoảng 5 phút":"Đã ẩn tin")}
+function del(row){if(!confirm("Xoá hẳn tin này khỏi Google Sheet?"))return;run({action:"admin_delete",row,tieu_de_cu:T(row).tieu_de},"Đã xoá")}
+function F(id,lab,v,o={}){return `<div ${o.full?'style="grid-column:1/-1"':""}><label>${lab}</label>${o.area?`<textarea id="${id}" rows="3">${esc(v)}</textarea>`:`<input id="${id}" value="${esc(v)}" ${o.type?`type="${o.type}"`:""} placeholder="${o.ph||""}">`}</div>`}
+function edit(row){
+  const t=row?T(row):{loai:"mua",trang_thai:"duyet"},lv=t.linh_vuc||t.nganh||"";
+  $("#mbody").innerHTML=`<h2>${row?"Sửa tin":"Đăng tin mới"}</h2><div class="mut sm">${row?"Thay đổi được lưu thẳng vào Google Sheet.":"Tin do admin đăng sẽ hiển thị ngay (sau khoảng 5 phút)."}</div>
+  <div class="f2">
+   <div><label>Loại nhu cầu *</label><select id="eL"><option value="mua" ${t.loai!="ban"?"selected":""}>Cần mua</option><option value="ban" ${t.loai=="ban"?"selected":""}>Cần bán</option></select></div>
+   <div><label>Trạng thái</label><select id="eS">${Object.entries(ST).map(([k,n])=>`<option value="${k}" ${stOf(t)==k?"selected":""}>${n}</option>`).join("")}</select></div>
+   ${F("eT","Tiêu đề *",t.tieu_de,{full:1})}${F("eD","Mô tả chi tiết",t.mo_ta,{full:1,area:1})}
+   <div style="grid-column:1/-1"><label>Ngành nghề *</label><select id="eN"><option value="">— Chọn ngành nghề —</option>${LV.map((x,i)=>`<option ${lv==x||lv==String(i+1)?"selected":""}>${x}</option>`).join("")}</select></div>
+   ${F("eK","Khu vực",t.khu_vuc,{ph:"VD: Quận 12, TP.HCM"})}${F("eNg","Ngày đăng",t.ngay_dang,{ph:"dd/mm/yyyy (để trống = hôm nay)"})}
+   ${F("eH","Người đăng *",t.ho_ten)}${F("eC","Công ty *",t.cong_ty)}
+   ${F("eP","SĐT / Zalo",t.sdt,{type:"tel"})}${F("eE","Email",t.email,{type:"email"})}
+   ${F("eW","Website",t.website)}${F("eSP","Sản phẩm / dịch vụ",t.san_pham)}
+   ${F("eLogo","Link logo (không bắt buộc)",t.logo,{full:1,ph:"https://…"})}
+  </div>
+  <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="obtn" onclick="closeM()">Huỷ</button><button class="btn" onclick="save(${row||0})">${row?"Lưu thay đổi":"Đăng tin"}</button></div>`;
+  $("#modal").style.display="flex";
+}
+function save(row){
+  const d={loai:val("#eL"),trang_thai:val("#eS"),tieu_de:val("#eT"),mo_ta:val("#eD"),nganh:val("#eN"),linh_vuc:val("#eN"),khu_vuc:val("#eK"),ho_ten:val("#eH"),cong_ty:val("#eC"),sdt:val("#eP"),email:val("#eE"),website:val("#eW"),san_pham:val("#eSP"),logo:val("#eLogo")};
+  if(val("#eNg"))d.ngay_dang=val("#eNg");
+  if(!d.tieu_de||!d.nganh||!d.ho_ten||!d.cong_ty)return toast("Nhập đủ các mục có dấu *");
+  run(row?{action:"admin_save",row,data:d,tieu_de_cu:T(row).tieu_de}:{action:"admin_save",data:d},row?"Đã lưu":"Đã đăng tin");
+}
+function closeM(){$("#modal").style.display="none"}
+$("#modal").onclick=e=>{if(e.target.id=="modal")closeM()};
+KEY?load():loginView();
+</script>
+</body>
+</html>
