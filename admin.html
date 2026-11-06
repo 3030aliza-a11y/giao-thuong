@@ -170,7 +170,8 @@ function renderHVA(){
   $("#app").innerHTML=secBar()+`<div class="tabs">${[["hien","Đang hiển thị",c("hien")],["an","Đã ẩn",c("an")]].map(([k,n,x])=>`<div class="${hvTab==k?"on":""}" onclick="hvTab='${k}';renderHVA()">${n} (${x})</div>`).join("")}</div>
   <div class="row" style="margin-bottom:12px"><input id="q" placeholder="Tìm tên, địa chỉ, sản phẩm…" value="${esc(q)}" style="flex:1;background:#fff" oninput="q=this.value;listHV()">
   <select style="width:auto;flex:1;background:#fff" onchange="hvN=+this.value;listHV()"><option value="0">Tất cả 14 nhóm ngành</option>${NG14.map((n,i)=>`<option value="${i+1}" ${hvN==i+1?"selected":""}>(${i+1}) ${n}</option>`).join("")}</select>
-  <button class="btn" onclick="editHV()">+ Thêm hội viên</button></div><div class="mut sm" id="hvc" style="margin-bottom:8px;color:#3b4a66"></div><div id="list"></div>`;
+  <button class="btn" onclick="editHV()">+ Thêm hội viên</button></div>
+  <div class="row" style="margin:-4px 0 12px"><button class="obtn" onclick="xlsOpen()">📥 Nhập từ file Excel</button><button class="obtn" onclick="cardOpen()">📇 Nhập từ name card (ảnh)</button></div><div class="mut sm" id="hvc" style="margin-bottom:8px;color:#3b4a66"></div><div id="list"></div>`;
   listHV();
 }
 function listHV(){
@@ -187,8 +188,8 @@ function listHV(){
 }
 function stHV(row,s){run({action:"admin_status",sheet:"HoiVien",row,trang_thai:s,tieu_de_cu:H(row).ten},s=="an"?"Đã ẩn khỏi app":"Đã hiện lại")}
 function delHV(row){if(!confirm("Xoá hẳn hội viên này khỏi Google Sheet?"))return;run({action:"admin_delete",sheet:"HoiVien",row,tieu_de_cu:H(row).ten},"Đã xoá")}
-function editHV(row){
-  const m=row?H(row):{},ns=nums(m.nhom);
+function editHV(row,pre){
+  const m=row?H(row):(pre||{}),ns=nums(m.nhom);
   $("#mbody").innerHTML=`<h2>${row?"Sửa hội viên":"Thêm hội viên"}</h2><div class="mut sm">Thông tin hiển thị trong tab Hội viên của Zalo Mini App.</div>
   <div class="f2">${F("hT","Tên doanh nghiệp *",m.ten,{full:1})}
    <div style="grid-column:1/-1"><label>Nhóm ngành * (chọn được nhiều)</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:13px;background:#f6faff;border-radius:10px;padding:10px">${NG14.map((n,i)=>`<label style="display:flex;gap:6px;align-items:flex-start;margin:0;color:var(--tx2);font-size:13px"><input type="checkbox" class="hn" value="${i+1}" ${ns.includes(i+1)?"checked":""} style="width:auto;margin-top:2px">(${i+1}) ${n}</label>`).join("")}</div></div>
@@ -204,6 +205,69 @@ function saveHV(row){
   if(!d.ten||!d.nhom)return toast("Nhập tên và chọn ít nhất 1 nhóm ngành");
   if(!row)d.trang_thai="hien";
   run(row?{action:"admin_save",sheet:"HoiVien",row,data:d,tieu_de_cu:H(row).ten}:{action:"admin_save",sheet:"HoiVien",data:d},row?"Đã lưu":"Đã thêm hội viên");
+}
+/* ---- Nhập từ Excel ---- */
+const loadJS=src=>new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=no;document.head.appendChild(e)});
+const XLSX_SRC="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const bo=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/[^a-z0-9]/g,"");
+// cột Excel → trường: chấp nhận nhiều cách đặt tên cột
+const COL={ten:["ten","tendoanhnghiep","tencongty","congty","doanhnghiep","company","tendn"],nhom:["nhom","nhomnganh","manhom"],dia_chi:["diachi","address","dc"],sdt:["sdt","dienthoai","sodienthoai","phone","tel","didong","zalo"],email:["email","mail"],website:["website","web"],logo:["logo","linklogo"],url_hamee:["urlhamee","linkhamee","hoso"],gioi_thieu:["gioithieu","mota","about"],san_pham:["sanpham","sanphamdichvu","dichvu","products"]};
+let XROWS=[];
+const daCo=t=>data.hv.some(m=>bo(m.ten)==bo(t));
+function nhomOf(v){const s=String(v||"");if(/^[\d,;\s]+$/.test(s))return nums(s).join(",");return NG14.map((n,i)=>bo(s).includes(bo(n))?i+1:0).filter(Boolean).join(",")}
+function xlsOpen(){
+  $("#mbody").innerHTML=`<h2>📥 Nhập hội viên từ Excel</h2><div class="mut sm">File .xlsx/.xls/.csv, dòng 1 là tên cột. Cột cần có: <b>Tên doanh nghiệp</b>; nên có: Nhóm ngành (số 1–14, nhiều nhóm cách dấu phẩy), Địa chỉ, Điện thoại, Email, Website, Sản phẩm, Giới thiệu, Logo.</div>
+  <div class="row" style="margin:12px 0"><input type="file" id="xf" accept=".xlsx,.xls,.csv" onchange="xlsRead(this.files[0])" style="flex:1"><button class="obtn" onclick="xlsMau()">⬇ Tải file mẫu</button></div>
+  <div id="xp"></div><div class="row" style="margin-top:16px;justify-content:flex-end"><button class="obtn" onclick="closeM()">Huỷ</button><button class="btn" id="xgo" onclick="xlsGo()" style="display:none">Nhập vào Google Sheet</button></div>`;
+  $("#modal").style.display="flex";loadJS(XLSX_SRC).catch(()=>toast("Không tải được thư viện Excel, kiểm tra mạng"));
+}
+async function xlsMau(){await loadJS(XLSX_SRC);const ws=XLSX.utils.aoa_to_sheet([["Tên doanh nghiệp","Nhóm ngành","Địa chỉ","Điện thoại","Email","Website","Sản phẩm","Giới thiệu","Logo"],["CÔNG TY TNHH VÍ DỤ","1,7","123 Đường A, Q.1, TP.HCM","0909000000","info@vidu.vn","vidu.vn","Máy CNC, khuôn mẫu","",""]]),ws2=XLSX.utils.aoa_to_sheet([["Số","Nhóm ngành"],...NG14.map((n,i)=>[i+1,n])]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"HoiVien");XLSX.utils.book_append_sheet(wb,ws2,"NhomNganh");XLSX.writeFile(wb,"Mau-nhap-hoi-vien.xlsx")}
+async function xlsRead(f){
+  if(!f)return;await loadJS(XLSX_SRC);
+  const wb=XLSX.read(await f.arrayBuffer()),A=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:"",raw:false});
+  const hi=A.findIndex(r=>r.some(c=>COL.ten.includes(bo(c))));
+  if(hi<0){$("#xp").innerHTML=`<div style="color:var(--red)">Không thấy cột "Tên doanh nghiệp" trong sheet đầu tiên.</div>`;return}
+  const map=A[hi].map(c=>Object.keys(COL).find(k=>COL[k].includes(bo(c))));
+  XROWS=A.slice(hi+1).map(r=>{const o={};map.forEach((k,j)=>{if(k&&String(r[j]).trim())o[k]=String(r[j]).trim()});if(o.nhom)o.nhom=nhomOf(o.nhom);o.trang_thai="hien";return o}).filter(o=>o.ten);
+  const trung=XROWS.filter(o=>daCo(o.ten)).length,moi=XROWS.length-trung;
+  $("#xp").innerHTML=`<div class="card" style="background:#f6faff;margin:0"><b>${XROWS.length}</b> dòng · <b style="color:var(--grn)">${moi} mới</b> · <span class="mut">${trung} trùng tên đã có (bỏ qua)</span>
+  <div class="mut sm" style="margin-top:4px">Cột nhận được: ${map.filter(Boolean).join(", ")}</div>
+  <div style="max-height:220px;overflow:auto;margin-top:8px;font-size:12px">${XROWS.slice(0,50).map(o=>`<div style="padding:4px 0;border-bottom:1px solid var(--bd);${daCo(o.ten)?"opacity:.45;text-decoration:line-through":""}">${esc(o.ten)} <span class="mut">· nhóm ${esc(o.nhom||"?")} · ${esc(o.sdt||"")}</span></div>`).join("")}${XROWS.length>50?`<div class="mut">… và ${XROWS.length-50} dòng nữa</div>`:""}</div></div>`;
+  $("#xgo").style.display=moi?"inline-block":"none";
+}
+async function xlsGo(){
+  const L=XROWS.filter(o=>!daCo(o.ten));if(!L.length)return;
+  $("#xgo").disabled=true;$("#xgo").textContent="Đang nhập…";
+  let r;try{r=await api({action:"admin_hv_import",rows:L})}catch(e){r={ok:false,error:"Lỗi mạng"}}
+  if(!r.ok){$("#xgo").disabled=false;$("#xgo").textContent="Nhập vào Google Sheet";return toast(r.error)}
+  closeM();toast("Đã nhập "+r.added+" hội viên");load();
+}
+/* ---- Nhập từ name card: đọc chữ trong ảnh ngay trên máy (Tesseract, miễn phí) ---- */
+function cardOpen(){
+  $("#mbody").innerHTML=`<h2>📇 Nhập từ name card</h2><div class="mut sm">Chụp/chọn ảnh danh thiếp (rõ nét, thẳng, đủ sáng). Máy tự đọc chữ rồi điền sẵn form — sếp kiểm tra, chọn nhóm ngành rồi lưu.</div>
+  <input type="file" accept="image/*" capture="environment" onchange="cardRead(this.files[0])" style="margin:12px 0">
+  <div id="cp"></div><div class="row" style="margin-top:12px;justify-content:flex-end"><button class="obtn" onclick="closeM()">Huỷ</button></div>`;
+  $("#modal").style.display="flex";
+}
+async function cardRead(f){
+  if(!f)return;const url=URL.createObjectURL(f);
+  $("#cp").innerHTML=`<img src="${url}" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--bd)"><div class="mut sm" id="cs" style="margin-top:8px">Đang tải bộ đọc chữ (lần đầu ~10–20 giây)…</div>`;
+  try{
+    await loadJS("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js");
+    const w=await Tesseract.createWorker(["vie","eng"],1,{logger:m=>{if(m.status=="recognizing text"&&$("#cs"))$("#cs").textContent="Đang đọc chữ… "+Math.round(m.progress*100)+"%"}});
+    const {data:{text}}=await w.recognize(f);await w.terminate();
+    editHV(0,{...cardParse(text),gioi_thieu:""});
+    $("#mbody").insertAdjacentHTML("afterbegin",`<details style="margin-bottom:8px;font-size:12px"><summary class="mut">📇 Chữ đọc được từ name card (bấm xem để đối chiếu)</summary><pre style="white-space:pre-wrap;background:#f6faff;padding:8px;border-radius:8px;font-family:inherit">${esc(text)}</pre></details>`);
+  }catch(e){$("#cs").innerHTML=`<span style="color:var(--red)">Không đọc được ảnh (${esc(e.message||e)}). Thử ảnh khác hoặc nhập tay.</span>`}
+}
+function cardParse(t){
+  const L=t.split(/\n/).map(x=>x.replace(/\s+/g," ").trim()).filter(x=>x.length>2),all=L.join(" ");
+  const email=(all.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/)||[""])[0];
+  const web=(all.replace(email,"").match(/(https?:\/\/)?(www\.)?[a-z0-9-]+(\.[a-z0-9-]+)*\.(com|vn|net|org|com\.vn|biz|info)(\/\S*)?/i)||[""])[0];
+  const sdt=[...new Set((all.match(/(\+?84|0)[\d .-]{8,13}\d/g)||[]).map(x=>x.replace(/[ .-]/g,"").replace(/^\+?84/,"0")).filter(x=>x.length>=10&&x.length<=11))].join(" - ");
+  const ten=L.find(x=>/c[oô]ng ty|cty|company|co\.?,? ?ltd|jsc|tnhh|c[oổ] ph[aầ]n|corp|doanh nghi[eệ]p/i.test(x))||"";
+  const dc=(L.find(x=>/đ\/c|địa chỉ|dia chi|address|add:|văn phòng|vp:|xưởng|nhà máy/i.test(x))||L.find(x=>/(đường|phường|quận|huyện|tp\.|q\.\s?\d|p\.\s?\d|kcn|tỉnh)/i.test(x))||"").replace(/^(đ\/c|địa chỉ|address|add|vp|văn phòng)\s*[:.]?\s*/i,"");
+  return {ten:ten.toUpperCase(),email,website:web.replace(/^https?:\/\//,""),sdt,dia_chi:dc};
 }
 function closeM(){$("#modal").style.display="none"}
 $("#modal").onclick=e=>{if(e.target.id=="modal")closeM()};
