@@ -64,7 +64,15 @@ function rows(sh) {
   return v.map((r, i) => { const o = { _row: i + 2 }; h.forEach((k, j) => o[k] = r[j]); return o; });
 }
 function admin(d, ss, ngay) {
-  if (!ADMIN_KEY || ADMIN_KEY === "DOI_MAT_KHAU_O_DAY" || d.key !== ADMIN_KEY) return { ok: false, error: "Sai mật khẩu" };
+  // mật khẩu đổi trên trang quản trị được lưu ở Script Properties; chưa đổi thì dùng ADMIN_KEY
+  const props = PropertiesService.getScriptProperties(), cur = props.getProperty("ADMIN_KEY") || ADMIN_KEY;
+  if (!cur || cur === "DOI_MAT_KHAU_O_DAY" || d.key !== cur) return { ok: false, error: "Sai mật khẩu" };
+  if (d.action === "admin_change_key") {
+    const k = String(d.new_key || "").trim();
+    if (k.length < 8) return { ok: false, error: "Mật khẩu mới tối thiểu 8 ký tự" };
+    props.setProperty("ADMIN_KEY", k);
+    return { ok: true };
+  }
   if (d.action === "admin_list") {
     const hv = ss.getSheetByName("HoiVien");
     return { ok: true, tin: rows(ss.getSheetByName("TinDang")), ketnoi: rows(ss.getSheetByName("KetNoi")), hv: hv ? rows(hv) : [] };

@@ -50,6 +50,7 @@ label{display:block;color:var(--mut);font-size:12px;margin:10px 0 4px}
 <div class="wrap">
   <div class="top"><h1>Quản trị HAMEE<small>Giao thương & Hội viên – Zalo Mini App</small></h1>
     <button class="ib" id="btnReload" onclick="load()" style="display:none">⟳ Tải lại</button>
+    <button class="ib" id="btnKey" onclick="keyOpen()" style="display:none">🔑 Đổi mật khẩu</button>
     <button class="ib" id="btnOut" onclick="logout()" style="display:none">Đăng xuất</button></div>
   <div id="app"></div>
 </div>
@@ -74,7 +75,7 @@ async function api(body){
   return r.json();
 }
 function loginView(err){
-  $("#btnReload").style.display=$("#btnOut").style.display="none";
+  $("#btnReload").style.display=$("#btnOut").style.display=$("#btnKey").style.display="none";
   $("#app").innerHTML=`<div class="card login"><h2 style="color:var(--pri2);font-size:18px">Đăng nhập quản trị</h2>
   <div class="mut sm" style="margin:4px 0 8px">Nhập mật khẩu Ban quản trị HAMEE.</div>
   <input id="k" type="password" placeholder="Mật khẩu" onkeydown="if(event.key=='Enter')login()">
@@ -89,7 +90,7 @@ async function load(){
   let r;try{r=await api({action:"admin_list"})}catch(e){return loginView("Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.")}
   if(!r.ok)return loginView(r.error);
   try{sessionStorage.setItem("gt_admin",KEY)}catch(e){}
-  data=r;$("#btnReload").style.display=$("#btnOut").style.display="inline-block";render();
+  data=r;$("#btnReload").style.display=$("#btnOut").style.display=$("#btnKey").style.display="inline-block";render();
 }
 const stOf=t=>(t.trang_thai||"").trim()||"cho_duyet";
 function secBar(){return `<div class="sec"><div class="${sec=="gt"?"on":""}" onclick="setSec('gt')">🛍️ GIAO THƯƠNG</div><div class="${sec=="hv"?"on":""}" onclick="setSec('hv')">🏭 HỘI VIÊN</div></div>`}
@@ -268,6 +269,23 @@ function cardParse(t){
   const ten=L.find(x=>/c[oô]ng ty|cty|company|co\.?,? ?ltd|jsc|tnhh|c[oổ] ph[aầ]n|corp|doanh nghi[eệ]p/i.test(x))||"";
   const dc=(L.find(x=>/đ\/c|địa chỉ|dia chi|address|add:|văn phòng|vp:|xưởng|nhà máy/i.test(x))||L.find(x=>/(đường|phường|quận|huyện|tp\.|q\.\s?\d|p\.\s?\d|kcn|tỉnh)/i.test(x))||"").replace(/^(đ\/c|địa chỉ|address|add|vp|văn phòng)\s*[:.]?\s*/i,"");
   return {ten:ten.toUpperCase(),email,website:web.replace(/^https?:\/\//,""),sdt,dia_chi:dc};
+}
+/* ---- Đổi mật khẩu ---- */
+function keyOpen(){
+  $("#mbody").innerHTML=`<h2>🔑 Đổi mật khẩu quản trị</h2><div class="mut sm">Áp dụng cho mọi người dùng trang quản trị. Tối thiểu 8 ký tự.</div>
+  <label>Mật khẩu hiện tại</label><input id="k0" type="password"><label>Mật khẩu mới</label><input id="k1" type="password"><label>Nhập lại mật khẩu mới</label><input id="k2" type="password">
+  <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="obtn" onclick="closeM()">Huỷ</button><button class="btn" onclick="keyGo()">Đổi mật khẩu</button></div>`;
+  $("#modal").style.display="flex";
+}
+async function keyGo(){
+  const k0=val("#k0"),k1=val("#k1");
+  if(k0!==KEY)return toast("Mật khẩu hiện tại không đúng");
+  if(k1.length<8)return toast("Mật khẩu mới tối thiểu 8 ký tự");
+  if(k1!==val("#k2"))return toast("Nhập lại mật khẩu mới chưa khớp");
+  let r;try{r=await api({action:"admin_change_key",new_key:k1})}catch(e){r={ok:false,error:"Lỗi mạng"}}
+  if(!r.ok)return toast(r.error);
+  KEY=k1;try{sessionStorage.setItem("gt_admin",KEY)}catch(e){}
+  closeM();toast("Đã đổi mật khẩu");
 }
 function closeM(){$("#modal").style.display="none"}
 $("#modal").onclick=e=>{if(e.target.id=="modal")closeM()};
