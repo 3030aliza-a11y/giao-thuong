@@ -19,6 +19,7 @@
 const ADMIN_KEY = "DOI_MAT_KHAU_O_DAY"; // ← mật khẩu trang quản trị
 const EMAIL_HAMEE = "hoicokhidien@gmail.com"; // ← email nhận thông báo (nhiều email cách nhau dấu phẩy)
 
+const SHEET_DANG_KY = "1ORrSvUHS1-G3l5EOmfrPmSZIxj-aZ4u--y6IFyN3fXk"; // file đăng ký hội viên
 const HV_HEAD = ["ten", "nhom", "dia_chi", "sdt", "email", "website", "logo", "url_hamee", "gioi_thieu", "san_pham", "trang_thai", "hinh_anh"];
 
 function doGet(e) {
@@ -57,6 +58,8 @@ function doPost(e) {
     let sh = ss.getSheetByName("DangKyHV");
     if (!sh) { sh = ss.insertSheet("DangKyHV"); sh.appendRow(["thoi_gian", "ho_ten", "chuc_danh", "sdt", "cong_ty", "dia_chi", "website", "email", "trang_thai"]); sh.setFrozenRows(1); }
     sh.appendRow([now, d.ho_ten, d.chuc_danh, "'" + d.sdt, d.cong_ty, d.dia_chi, d.website, d.email, "moi"]);
+    // ghi thêm vào file đăng ký hội viên của HAMEE (cùng cột với Google Form cũ)
+    try { SpreadsheetApp.openById(SHEET_DANG_KY).getSheets()[0].appendRow([now, d.ho_ten, d.chuc_danh, "'" + d.sdt, d.cong_ty, d.dia_chi, d.website, d.email]); } catch (err) {}
     MailApp.sendEmail({
       to: EMAIL_HAMEE,
       subject: `[ĐĂNG KÝ HỘI VIÊN] ${d.cong_ty} – ${d.ho_ten}`,
