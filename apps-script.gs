@@ -53,6 +53,16 @@ function doPost(e) {
       body: `Có hội viên muốn kết nối (${now})\n\nNgười liên hệ: ${d.ten}\nDoanh nghiệp: ${d.cty}\nSĐT/Zalo: ${d.sdt}\nEmail: ${d.email}\nWebsite: ${d.web}\nNgành nghề: ${d.lv}\nSản phẩm: ${d.sp}\nLời nhắn: ${d.loi_nhan}\n\nQuan tâm tin: ${d.tin} (${d.loai === "mua" ? "Cần mua" : "Cần bán"})\nBên đăng: ${d.nguoi_dang} – ${d.cong_ty_dang} – ${d.sdt_nguoi_dang}`
     });
   }
+  if (d.action === "dang_ky_hv") {
+    let sh = ss.getSheetByName("DangKyHV");
+    if (!sh) { sh = ss.insertSheet("DangKyHV"); sh.appendRow(["thoi_gian", "ho_ten", "chuc_danh", "sdt", "cong_ty", "dia_chi", "website", "email", "trang_thai"]); sh.setFrozenRows(1); }
+    sh.appendRow([now, d.ho_ten, d.chuc_danh, "'" + d.sdt, d.cong_ty, d.dia_chi, d.website, d.email, "moi"]);
+    MailApp.sendEmail({
+      to: EMAIL_HAMEE,
+      subject: `[ĐĂNG KÝ HỘI VIÊN] ${d.cong_ty} – ${d.ho_ten}`,
+      body: `Có đăng ký hội viên mới (${now})\n\nHọ và tên: ${d.ho_ten}\nChức danh: ${d.chuc_danh}\nSĐT: ${d.sdt}\nDoanh nghiệp: ${d.cong_ty}\nĐịa chỉ: ${d.dia_chi}\nWebsite: ${d.website}\nEmail: ${d.email}\n\n→ Xem và xử lý trong trang quản trị, mục HỘI VIÊN → Đăng ký mới.`
+    });
+  }
   if (String(d.action || "").indexOf("admin_") === 0) return json(admin(d, ss, ngay));
   return ContentService.createTextOutput("ok");
 }
@@ -75,7 +85,7 @@ function admin(d, ss, ngay) {
   }
   if (d.action === "admin_list") {
     const hv = ss.getSheetByName("HoiVien");
-    return { ok: true, tin: rows(ss.getSheetByName("TinDang")), ketnoi: rows(ss.getSheetByName("KetNoi")), hv: hv ? rows(hv) : [] };
+    return { ok: true, tin: rows(ss.getSheetByName("TinDang")), ketnoi: rows(ss.getSheetByName("KetNoi")), hv: hv ? rows(hv) : [], dk: ss.getSheetByName("DangKyHV") ? rows(ss.getSheetByName("DangKyHV")) : [] };
   }
   if (d.action === "admin_hv_import") {
     let sh = ss.getSheetByName("HoiVien");
@@ -93,7 +103,7 @@ function admin(d, ss, ngay) {
     f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     return { ok: true, url: "https://lh3.googleusercontent.com/d/" + f.getId() };
   }
-  const name = d.sheet === "HoiVien" ? "HoiVien" : "TinDang", key = name === "HoiVien" ? "ten" : "tieu_de";
+  const KEYS = { TinDang: "tieu_de", HoiVien: "ten", DangKyHV: "ho_ten" }, name = KEYS[d.sheet] ? d.sheet : "TinDang", key = KEYS[name];
   const sh = ss.getSheetByName(name);
   if (!sh) return { ok: false, error: "Chưa có tab " + name };
   const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];

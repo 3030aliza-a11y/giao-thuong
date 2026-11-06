@@ -66,7 +66,7 @@ const NG14=["Máy móc, thiết bị & dây chuyền công nghiệp","Gia công 
 const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const val=i=>($(i)?.value||"").trim();
 function toast(m){const e=$("#toast");e.textContent=m;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",2200)}
-let KEY="",data={tin:[],ketnoi:[],hv:[]},tab="cho_duyet",q="",sec="gt",hvTab="hien",hvN=0;
+let KEY="",data={tin:[],ketnoi:[],hv:[],dk:[]},tab="cho_duyet",q="",sec="gt",hvTab="hien",hvN=0;
 try{sec=sessionStorage.getItem("gt_sec")||"gt"}catch(e){}
 try{KEY=sessionStorage.getItem("gt_admin")||""}catch(e){}
 
@@ -168,7 +168,7 @@ const H=row=>data.hv.find(m=>m._row==row);
 const nums=s=>String(s||"").split(/[,;\s]+/).map(Number).filter(n=>n>=1&&n<=14);
 function renderHVA(){
   const c=k=>data.hv.filter(m=>hvSt(m)==k).length;
-  $("#app").innerHTML=secBar()+`<div class="tabs">${[["hien","Đang hiển thị",c("hien")],["an","Đã ẩn",c("an")]].map(([k,n,x])=>`<div class="${hvTab==k?"on":""}" onclick="hvTab='${k}';renderHVA()">${n} (${x})</div>`).join("")}</div>
+  $("#app").innerHTML=secBar()+`<div class="tabs">${[["dk","Đăng ký mới",(data.dk||[]).filter(x=>x.trang_thai=="moi").length],["hien","Đang hiển thị",c("hien")],["an","Đã ẩn",c("an")]].map(([k,n,x])=>`<div class="${hvTab==k?"on":""}" onclick="hvTab='${k}';renderHVA()">${n} ${k=="dk"?(x?`<b>${x}</b>`:""):"("+x+")"}</div>`).join("")}</div>
   <div class="row" style="margin-bottom:12px"><input id="q" placeholder="Tìm tên, địa chỉ, sản phẩm…" value="${esc(q)}" style="flex:1;background:#fff" oninput="q=this.value;listHV()">
   <select style="width:auto;flex:1;background:#fff" onchange="hvN=+this.value;listHV()"><option value="0">Tất cả 14 nhóm ngành</option>${NG14.map((n,i)=>`<option value="${i+1}" ${hvN==i+1?"selected":""}>(${i+1}) ${n}</option>`).join("")}</select>
   <button class="btn" onclick="editHV()">+ Thêm hội viên</button></div>
@@ -176,6 +176,7 @@ function renderHVA(){
   listHV();
 }
 function listHV(){
+  if(hvTab=="dk")return listDK();
   const s=q.toLowerCase(),L=data.hv.filter(m=>hvSt(m)==hvTab&&(!hvN||nums(m.nhom).includes(hvN))&&(!s||[m.ten,m.dia_chi,m.san_pham,m.email,m.sdt].join(" ").toLowerCase().includes(s)));
   $("#hvc").textContent=L.length+" doanh nghiệp";
   if(!data.hv.length){$("#list").innerHTML=`<div class="empty">Chưa có dữ liệu hội viên trong Google Sheet (tab HoiVien).</div>`;return}
@@ -187,6 +188,21 @@ function listHV(){
     <div class="acts">${hvSt(m)=="hien"?`<button class="obtn o" onclick="stHV(${m._row},'an')">Ẩn khỏi app</button>`:`<button class="obtn g" onclick="stHV(${m._row},'hien')">Hiện lại</button>`}
     <button class="obtn" onclick="editHV(${m._row})">✏️ Sửa</button><button class="obtn r" onclick="delHV(${m._row})">🗑 Xoá</button></div></div>`).join(""):`<div class="empty">Không có doanh nghiệp phù hợp</div>`;
 }
+/* ---- Đăng ký hội viên từ Mini App ---- */
+const DKST={moi:["Mới","cho_duyet"],da_lien_he:["Đã liên hệ","duyet"],da_them:["Đã thêm vào HV","duyet"]};
+const K=row=>data.dk.find(x=>x._row==row);let DKROW=0;
+function listDK(){
+  const s=q.toLowerCase(),L=(data.dk||[]).filter(x=>!s||[x.ho_ten,x.cong_ty,x.sdt,x.email].join(" ").toLowerCase().includes(s)).reverse();
+  $("#hvc").textContent=L.length+" lượt đăng ký";
+  $("#list").innerHTML=L.length?L.map(x=>{const t=DKST[x.trang_thai]||DKST.moi;return `<div class="card"><div class="row"><span class="st ${t[1]}">${t[0]}</span><span class="mut sm">📅 ${esc(x.thoi_gian)}</span></div>
+    <h3>${esc(x.cong_ty)}</h3><div class="grid"><div><span>Họ tên:</span> ${esc(x.ho_ten)}</div><div><span>Chức danh:</span> ${esc(x.chuc_danh)}</div>
+    <div><span>SĐT:</span> <a href="tel:${esc(x.sdt)}">${esc(x.sdt)}</a></div><div><span>Email:</span> ${esc(x.email)}</div><div><span>Website:</span> ${esc(x.website)}</div><div style="grid-column:1/-1"><span>Địa chỉ:</span> ${esc(x.dia_chi)}</div></div>
+    <div class="acts">${x.trang_thai!="da_them"?`<button class="obtn g" onclick="dkAdd(${x._row})">➕ Thêm vào danh sách hội viên</button>`:""}${x.trang_thai=="moi"?`<button class="obtn" onclick="dkSt(${x._row},'da_lien_he')">☎ Đánh dấu đã liên hệ</button>`:""}
+    <button class="obtn r" onclick="dkDel(${x._row})">🗑 Xoá</button></div></div>`}).join(""):`<div class="empty">Chưa có đăng ký nào từ Mini App</div>`;
+}
+function dkSt(row,s){run({action:"admin_status",sheet:"DangKyHV",row,trang_thai:s,tieu_de_cu:K(row).ho_ten},"Đã cập nhật")}
+function dkDel(row){if(!confirm("Xoá đăng ký này?"))return;run({action:"admin_delete",sheet:"DangKyHV",row,tieu_de_cu:K(row).ho_ten},"Đã xoá")}
+function dkAdd(row){const x=K(row);editHV(0,{ten:x.cong_ty,dia_chi:x.dia_chi,sdt:x.sdt,email:x.email,website:x.website});DKROW=row}
 function stHV(row,s){run({action:"admin_status",sheet:"HoiVien",row,trang_thai:s,tieu_de_cu:H(row).ten},s=="an"?"Đã ẩn khỏi app":"Đã hiện lại")}
 function delHV(row){if(!confirm("Xoá hẳn hội viên này khỏi Google Sheet?"))return;run({action:"admin_delete",sheet:"HoiVien",row,tieu_de_cu:H(row).ten},"Đã xoá")}
 function editHV(row,pre){
@@ -202,10 +218,12 @@ function editHV(row,pre){
   <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="obtn" onclick="closeM()">Huỷ</button><button class="btn" onclick="saveHV(${row||0})">${row?"Lưu thay đổi":"Thêm hội viên"}</button></div>`;
   $("#modal").style.display="flex";IMG=String(m.hinh_anh||"").split(/[,\s]+/).filter(Boolean);drawImg();
 }
-function saveHV(row){
+async function saveHV(row){
+  const dkr=DKROW;
   const d={ten:val("#hT"),nhom:[...document.querySelectorAll(".hn:checked")].map(x=>x.value).join(","),dia_chi:val("#hD"),sdt:val("#hP"),email:val("#hE"),website:val("#hW"),san_pham:val("#hS"),logo:val("#hL"),url_hamee:val("#hU"),gioi_thieu:val("#hG"),hinh_anh:IMG.join(",")};
   if(!d.ten||!d.nhom)return toast("Nhập tên và chọn ít nhất 1 nhóm ngành");
   if(!row)d.trang_thai="hien";
+  if(dkr){const x=K(dkr);if(x)await api({action:"admin_status",sheet:"DangKyHV",row:dkr,trang_thai:"da_them",tieu_de_cu:x.ho_ten})}
   run(row?{action:"admin_save",sheet:"HoiVien",row,data:d,tieu_de_cu:H(row).ten}:{action:"admin_save",sheet:"HoiVien",data:d},row?"Đã lưu":"Đã thêm hội viên");
 }
 /* ---- Nhập từ Excel ---- */
@@ -295,7 +313,7 @@ async function keyGo(){
   KEY=k1;try{sessionStorage.setItem("gt_admin",KEY)}catch(e){}
   closeM();toast("Đã đổi mật khẩu");
 }
-function closeM(){$("#modal").style.display="none"}
+function closeM(){DKROW=0;$("#modal").style.display="none"}
 $("#modal").onclick=e=>{if(e.target.id=="modal")closeM()};
 KEY?load():loginView();
 </script>

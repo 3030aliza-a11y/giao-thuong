@@ -78,10 +78,17 @@ label{display:block;color:var(--mut);font-size:13px;margin:12px 0 6px}
 <!-- HỘI VIÊN -->
 <section class="page" id="hv">
   <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">🏭</div><div class="mid"><h1>Hội viên HAMEE</h1><small id="hvSub">Danh bạ doanh nghiệp theo 14 nhóm ngành</small></div></div>
+  <button class="btn" style="width:100%;margin-bottom:12px" onclick="modal(dkForm())">📝 ĐĂNG KÝ HỘI VIÊN</button>
   <input id="hq" placeholder="Tìm tên doanh nghiệp, địa chỉ, sản phẩm...">
   <div class="chips" id="hchips"></div>
   <div class="mut" id="hcount" style="margin:4px 0 12px"></div>
   <div id="hlist"></div>
+</section>
+
+<!-- ĐĂNG KÝ HỘI VIÊN (mở riêng bằng ?view=dangky) -->
+<section class="page" id="dk">
+  <div class="top"><div class="ib" style="background:#fff;font-size:22px;line-height:44px">📝</div><div class="mid"><h1>Đăng ký hội viên</h1><small>Hiệp hội DN Cơ khí – Điện TP.HCM</small></div></div>
+  <div class="card" id="dkBox" style="background:#fff;border-radius:16px;padding:16px"></div>
 </section>
 
 <!-- ĐÃ LƯU -->
@@ -183,6 +190,20 @@ async function submitContact(id){const p=P(id),d={ten:val("#cN"),cty:val("#cC"),
   try{await send({action:"ket_noi",...d,lv:LV[+d.lv],loi_nhan:msg,tin:p.tieu_de,loai:p.loai,cong_ty_dang:p.cong_ty,nguoi_dang:p.ho_ten,sdt_nguoi_dang:p.sdt})}catch(e){}
   closeM();toast("Đã gửi! HAMEE sẽ liên hệ anh/chị sớm");
   openOA(`[KẾT NỐI] ${d.ten} – ${d.cty} – ${d.sdt}\nQuan tâm: ${p.tieu_de}${msg?"\nLời nhắn: "+msg:""}`)}
+/* ---- Đăng ký hội viên ---- */
+function dkForm(){const m=me();return `<h3 style="margin:0 0 4px">Đăng ký hội viên HAMEE</h3><div class="mut" style="font-size:13px">Ban quản trị sẽ liên hệ anh/chị sau khi nhận thông tin.</div>
+  ${field("dN","Họ và tên *","",m.ten)}${field("dR","Chức danh *","VD: Giám đốc","")}${field("dP","Số điện thoại liên hệ *","",m.sdt,"tel")}
+  ${field("dC","Tên doanh nghiệp *","",m.cty)}${field("dA","Địa chỉ doanh nghiệp *","","")}${field("dW","Website doanh nghiệp","congty.vn",m.web)}${field("dE","Email liên hệ *","",m.email,"email")}
+  <button class="btn" style="width:100%;margin-top:16px" onclick="submitDK()">GỬI ĐĂNG KÝ</button>`}
+async function submitDK(){const d={ho_ten:val("#dN"),chuc_danh:val("#dR"),sdt:val("#dP").replace(/[\s.]/g,""),cong_ty:val("#dC"),dia_chi:val("#dA"),website:val("#dW"),email:val("#dE")};
+  if(!d.ho_ten||!d.chuc_danh||!d.cong_ty||!d.dia_chi)return toast("Nhập đủ các mục có dấu *");
+  if(!/^0\d{9,10}$/.test(d.sdt))return toast("Số điện thoại chưa đúng");
+  if(!/^\S+@\S+\.\S+$/.test(d.email))return toast("Email chưa đúng");
+  sv("gt_me",{...me(),ten:d.ho_ten,cty:d.cong_ty,sdt:d.sdt,email:d.email,web:d.website});
+  try{await send({action:"dang_ky_hv",...d})}catch(e){}
+  closeM();const b=$("#dkBox");if(b)b.innerHTML=`<div style="text-align:center;padding:24px 8px"><div style="font-size:44px">✅</div><h3>Đã gửi đăng ký!</h3><div class="mut">Cảm ơn anh/chị. Ban quản trị HAMEE sẽ liên hệ sớm.</div></div>`;
+  toast("Đã gửi đăng ký! HAMEE sẽ liên hệ sớm");
+  openOA(`[ĐĂNG KÝ HỘI VIÊN] ${d.ho_ten} – ${d.chuc_danh}\n${d.cong_ty}\nSĐT: ${d.sdt} – ${d.email}`)}
 function openPost(){const m=me();
   modal(`<h3 style="margin:0 0 4px">Gửi nhu cầu mua / bán</h3><div class="mut" style="font-size:13px">Tin sẽ hiển thị sau khi Ban quản trị duyệt.</div>
   <label>Loại nhu cầu *</label><div class="seg" id="pT" style="box-shadow:none;border:1px solid var(--bd)"><div data-v="mua" class="${st.type=="mua"?"on":""}">Cần mua</div><div data-v="ban" class="${st.type=="ban"?"on":""}">Cần bán</div></div>
@@ -266,7 +287,8 @@ load();
 
 // 2 trang song song: mặc định = GIAO THƯƠNG; ?view=hoivien (hoặc /hoivien/) = THÔNG TIN HỘI VIÊN
 (()=>{const v=new URLSearchParams(location.search).get("view")||window.DEFAULT_VIEW;
-  if(v=="hoivien"){document.title="HỘI VIÊN HAMEE";document.querySelector("nav").style.display="none";document.body.style.paddingBottom="16px";go("hv")}
+  if(v=="dangky"){document.title="ĐĂNG KÝ HỘI VIÊN";document.querySelector("nav").style.display="none";document.body.style.paddingBottom="16px";go("dk");$("#dkBox").innerHTML=dkForm()}
+  else if(v=="hoivien"){document.title="HỘI VIÊN HAMEE";document.querySelector("nav").style.display="none";document.body.style.paddingBottom="16px";go("hv")}
   else{document.querySelector('nav button[data-p="hv"]').style.display="none"}})();
 </script>
 </body>
