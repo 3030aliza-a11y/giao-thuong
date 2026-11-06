@@ -254,12 +254,13 @@ function openHV(i){const m=HV[i],ph=(m.sdt||"").replace(/[^\d+]/g,"").replace(/^
   <div class="chips" style="flex-wrap:wrap">${m.ng.map(n=>`<div class="chip on">(${n}) ${esc(NG14[n-1])}</div>`).join("")}</div>
   ${m.gt?`<div class="desc" style="margin-bottom:12px">${esc(m.gt)}</div>`:""}
   <div class="info">${m.dc?`<div><span>Địa chỉ</span>${esc(m.dc)}</div>`:""}${m.sdt?`<div><span>Điện thoại</span>${esc(m.sdt)}</div>`:""}${m.email?`<div><span>Email</span>${esc(m.email)}</div>`:""}${m.web?`<div><span>Website</span>${esc(m.web)}</div>`:""}${m.sp?`<div><span>Sản phẩm</span>${esc(m.sp)}</div>`:""}</div>
+  ${(m.anh||[]).length?`<div style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;padding-bottom:4px">${m.anh.map(u=>`<img src="${esc(u)}" loading="lazy" onclick="window.open('${esc(u)}')" style="width:120px;height:90px;object-fit:cover;border-radius:10px;flex:none;border:1px solid #d6e6f5">`).join("")}</div>`:""}
   <div class="acts" style="margin-top:14px">${ph?`<button class="obtn" onclick="call('${ph}')">📞 Gọi</button>`:""}${/^0[35789]\d{8}$/.test(ph)?`<button class="obtn" onclick="openZalo('${ph}')">💬 Zalo</button>`:""}${m.url?`<button class="obtn" onclick="ZMP?.openWebview?ZMP.openWebview({url:'${esc(m.url)}'}):window.open('${esc(m.url)}','_blank')">🌐 Hồ sơ hamee.vn</button>`:""}</div>`)}
 $("#hq").oninput=e=>{hs.q=e.target.value;renderHV()};
 renderHV();
 // Đọc hội viên từ Google Sheet (tab HoiVien) qua Apps Script; lỗi mạng thì giữ dữ liệu có sẵn ở trên
 (async()=>{if(!SCRIPT_URL)return;try{const r=await(await fetch(SCRIPT_URL+"?action=hv")).json();
-  if(r.ok&&r.hv&&r.hv.length){HV=r.hv.map((m,i)=>({i,ten:m.ten,dc:m.dia_chi,email:m.email,sdt:m.sdt,logo:m.logo,url:m.url_hamee,gt:m.gioi_thieu,web:m.website,sp:m.san_pham,
+  if(r.ok&&r.hv&&r.hv.length){HV=r.hv.map((m,i)=>({i,ten:m.ten,dc:m.dia_chi,email:m.email,sdt:m.sdt,logo:m.logo,url:m.url_hamee,gt:m.gioi_thieu,web:m.website,sp:m.san_pham,anh:String(m.hinh_anh||"").split(/[,\s]+/).filter(Boolean),
     ng:String(m.nhom||"").split(/[,;\s]+/).map(Number).filter(n=>n>=1&&n<=NG14.length)}));renderHV()}}catch(e){}})();
 load();
 

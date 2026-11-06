@@ -196,13 +196,14 @@ function editHV(row,pre){
    <div style="grid-column:1/-1"><label>Nhóm ngành * (chọn được nhiều)</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:13px;background:#f6faff;border-radius:10px;padding:10px">${NG14.map((n,i)=>`<label style="display:flex;gap:6px;align-items:flex-start;margin:0;color:var(--tx2);font-size:13px"><input type="checkbox" class="hn" value="${i+1}" ${ns.includes(i+1)?"checked":""} style="width:auto;margin-top:2px">(${i+1}) ${n}</label>`).join("")}</div></div>
    ${F("hD","Địa chỉ",m.dia_chi,{full:1})}${F("hP","Điện thoại",m.sdt)}${F("hE","Email",m.email)}
    ${F("hW","Website",m.website)}${F("hS","Sản phẩm / dịch vụ",m.san_pham)}
-   ${F("hL","Link logo",m.logo,{full:1,ph:"https://…"})}${F("hU","Link hồ sơ hamee.vn",m.url_hamee,{full:1})}
+   <div style="grid-column:1/-1"><label>Logo</label><div class="row" style="flex-wrap:nowrap"><img id="hLi" src="${esc(m.logo||"")}" style="width:56px;height:56px;object-fit:contain;border:1px solid var(--bd);border-radius:10px;background:#fff;flex:none;${m.logo?"":"display:none"}"><input id="hL" value="${esc(m.logo)}" placeholder="Dán link hoặc bấm Tải ảnh" oninput="$('#hLi').src=this.value;$('#hLi').style.display=this.value?'':'none'"><label class="obtn" style="margin:0;white-space:nowrap">⬆ Tải ảnh<input type="file" accept="image/*" hidden onchange="upLogo(this.files[0])"></label></div></div>
+   <div style="grid-column:1/-1"><label>Hình ảnh (nhà xưởng, sản phẩm… tối đa 8 ảnh)</label><div id="hA" class="row"></div></div>${F("hU","Link hồ sơ hamee.vn",m.url_hamee,{full:1})}
    ${F("hG","Giới thiệu",m.gioi_thieu,{full:1,area:1})}</div>
   <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="obtn" onclick="closeM()">Huỷ</button><button class="btn" onclick="saveHV(${row||0})">${row?"Lưu thay đổi":"Thêm hội viên"}</button></div>`;
-  $("#modal").style.display="flex";
+  $("#modal").style.display="flex";IMG=String(m.hinh_anh||"").split(/[,\s]+/).filter(Boolean);drawImg();
 }
 function saveHV(row){
-  const d={ten:val("#hT"),nhom:[...document.querySelectorAll(".hn:checked")].map(x=>x.value).join(","),dia_chi:val("#hD"),sdt:val("#hP"),email:val("#hE"),website:val("#hW"),san_pham:val("#hS"),logo:val("#hL"),url_hamee:val("#hU"),gioi_thieu:val("#hG")};
+  const d={ten:val("#hT"),nhom:[...document.querySelectorAll(".hn:checked")].map(x=>x.value).join(","),dia_chi:val("#hD"),sdt:val("#hP"),email:val("#hE"),website:val("#hW"),san_pham:val("#hS"),logo:val("#hL"),url_hamee:val("#hU"),gioi_thieu:val("#hG"),hinh_anh:IMG.join(",")};
   if(!d.ten||!d.nhom)return toast("Nhập tên và chọn ít nhất 1 nhóm ngành");
   if(!row)d.trang_thai="hien";
   run(row?{action:"admin_save",sheet:"HoiVien",row,data:d,tieu_de_cu:H(row).ten}:{action:"admin_save",sheet:"HoiVien",data:d},row?"Đã lưu":"Đã thêm hội viên");
@@ -270,6 +271,13 @@ function cardParse(t){
   const dc=(L.find(x=>/đ\/c|địa chỉ|dia chi|address|add:|văn phòng|vp:|xưởng|nhà máy/i.test(x))||L.find(x=>/(đường|phường|quận|huyện|tp\.|q\.\s?\d|p\.\s?\d|kcn|tỉnh)/i.test(x))||"").replace(/^(đ\/c|địa chỉ|address|add|vp|văn phòng)\s*[:.]?\s*/i,"");
   return {ten:ten.toUpperCase(),email,website:web.replace(/^https?:\/\//,""),sdt,dia_chi:dc};
 }
+/* ---- Ảnh hội viên: thu nhỏ trên máy rồi tải lên Drive HAMEE ---- */
+let IMG=[];
+function drawImg(){$("#hA").innerHTML=IMG.map((u,i)=>`<div style="position:relative"><img src="${esc(u)}" style="width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid var(--bd)"><b onclick="IMG.splice(${i},1);drawImg()" style="position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;cursor:pointer">×</b></div>`).join("")+(IMG.length<8?`<label style="width:84px;height:84px;margin:0;border:2px dashed #b9d3f0;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;color:var(--pri);font-size:12px;font-weight:600"><span style="font-size:24px">+</span>Thêm ảnh<input type="file" accept="image/*" multiple hidden onchange="upImgs(this.files)"></label>`:"")}
+function shrink(f,max){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(im.src);ok(c.toDataURL("image/jpeg",.85).split(",")[1])};im.onerror=()=>no(new Error("Không đọc được ảnh"));im.src=URL.createObjectURL(f)})}
+async function upOne(f,max){const r=await api({action:"admin_upload",name:(val("#hT")||"hoivien").slice(0,40)+"-"+Date.now()+".jpg",mime:"image/jpeg",data:await shrink(f,max)});if(!r.ok)throw new Error(r.error);return r.url}
+async function upLogo(f){if(!f)return;toast("Đang tải logo…");try{const u=await upOne(f,400);$("#hL").value=u;$("#hLi").src=u;$("#hLi").style.display="";toast("Đã tải logo")}catch(e){toast(e.message)}}
+async function upImgs(fs){const L=[...fs].slice(0,8-IMG.length);for(let i=0;i<L.length;i++){toast(`Đang tải ảnh ${i+1}/${L.length}…`);try{IMG.push(await upOne(L[i],1280));drawImg()}catch(e){return toast(e.message)}}toast("Đã tải ảnh – nhớ bấm Lưu")}
 /* ---- Đổi mật khẩu ---- */
 function keyOpen(){
   $("#mbody").innerHTML=`<h2>🔑 Đổi mật khẩu quản trị</h2><div class="mut sm">Áp dụng cho mọi người dùng trang quản trị. Tối thiểu 8 ký tự.</div>

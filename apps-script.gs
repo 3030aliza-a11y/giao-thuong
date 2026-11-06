@@ -19,7 +19,7 @@
 const ADMIN_KEY = "DOI_MAT_KHAU_O_DAY"; // ← mật khẩu trang quản trị
 const EMAIL_HAMEE = "hoicokhidien@gmail.com"; // ← email nhận thông báo (nhiều email cách nhau dấu phẩy)
 
-const HV_HEAD = ["ten", "nhom", "dia_chi", "sdt", "email", "website", "logo", "url_hamee", "gioi_thieu", "san_pham", "trang_thai"];
+const HV_HEAD = ["ten", "nhom", "dia_chi", "sdt", "email", "website", "logo", "url_hamee", "gioi_thieu", "san_pham", "trang_thai", "hinh_anh"];
 
 function doGet(e) {
   if (e.parameter.action === "hv") {
@@ -86,6 +86,13 @@ function admin(d, ss, ngay) {
     if (data.length) sh.getRange(sh.getLastRow() + 1, 1, data.length, HV_HEAD.length).setValues(data);
     return { ok: true, added: data.length };
   }
+  if (d.action === "admin_upload") {
+    // ảnh hội viên lưu trong thư mục Drive "HoiVien-HinhAnh", ai có link đều xem được
+    const it = DriveApp.getFoldersByName("HoiVien-HinhAnh"), folder = it.hasNext() ? it.next() : DriveApp.createFolder("HoiVien-HinhAnh");
+    const f = folder.createFile(Utilities.newBlob(Utilities.base64Decode(d.data), d.mime || "image/jpeg", d.name || "anh.jpg"));
+    f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return { ok: true, url: "https://lh3.googleusercontent.com/d/" + f.getId() };
+  }
   const name = d.sheet === "HoiVien" ? "HoiVien" : "TinDang", key = name === "HoiVien" ? "ten" : "tieu_de";
   const sh = ss.getSheetByName(name);
   if (!sh) return { ok: false, error: "Chưa có tab " + name };
@@ -99,6 +106,7 @@ function admin(d, ss, ngay) {
   }
   if (d.action === "admin_save") {
     const f = d.data || {};
+    if (name === "HoiVien") Object.keys(f).forEach(k => { if (head.indexOf(k) < 0) { sh.getRange(1, head.length + 1).setValue(k); head.push(k); } });
     if (f.sdt) f.sdt = "'" + f.sdt;
     if (d.row) {
       if (!check(d.row)) return { ok: false, error: "Dữ liệu đã thay đổi, tải lại trang" };
