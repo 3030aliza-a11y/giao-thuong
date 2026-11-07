@@ -194,16 +194,20 @@ async function submitContact(id){const p=P(id),d={ten:val("#cN"),cty:val("#cC"),
 function dkForm(){const m=me();return `<h3 style="margin:0 0 4px">Đăng ký hội viên HAMEE</h3><div class="mut" style="font-size:13px">Ban quản trị sẽ liên hệ anh/chị sau khi nhận thông tin.</div>
   ${field("dN","Họ và tên *","",m.ten)}${field("dR","Chức danh *","VD: Giám đốc","")}${field("dP","Số điện thoại liên hệ *","",m.sdt,"tel")}
   ${field("dC","Tên doanh nghiệp *","",m.cty)}${field("dA","Địa chỉ doanh nghiệp *","","")}${field("dW","Website doanh nghiệp","congty.vn",m.web)}${field("dE","Email liên hệ *","",m.email,"email")}
-  <button class="btn" style="width:100%;margin-top:16px" onclick="submitDK()">GỬI ĐĂNG KÝ</button>`}
-async function submitDK(){const d={ho_ten:val("#dN"),chuc_danh:val("#dR"),sdt:val("#dP").replace(/[\s.]/g,""),cong_ty:val("#dC"),dia_chi:val("#dA"),website:val("#dW"),email:val("#dE")};
-  if(!d.ho_ten||!d.chuc_danh||!d.cong_ty||!d.dia_chi)return toast("Nhập đủ các mục có dấu *");
-  if(!/^0\d{9,10}$/.test(d.sdt))return toast("Số điện thoại chưa đúng");
-  if(!/^\S+@\S+\.\S+$/.test(d.email))return toast("Email chưa đúng");
+  <button class="btn" style="width:100%;margin-top:16px" onclick="submitDK(this)">GỬI ĐĂNG KÝ</button>`}
+async function submitDK(btn){const d={ho_ten:val("#dN"),chuc_danh:val("#dR"),sdt:val("#dP").replace(/[\s.]/g,""),cong_ty:val("#dC"),dia_chi:val("#dA"),website:val("#dW"),email:val("#dE")};
+  // báo lỗi ngay dưới ô còn thiếu (toast dễ bị khuất trên Mini App)
+  const err=[["dN",!d.ho_ten,"Vui lòng nhập họ và tên"],["dR",!d.chuc_danh,"Vui lòng nhập chức danh"],["dP",!/^0\d{9,10}$/.test(d.sdt),"Số điện thoại chưa đúng (10–11 số, bắt đầu bằng 0)"],["dC",!d.cong_ty,"Vui lòng nhập tên doanh nghiệp"],["dA",!d.dia_chi,"Vui lòng nhập địa chỉ doanh nghiệp"],["dE",!/^\S+@\S+\.\S+$/.test(d.email),"Email chưa đúng"]];
+  document.querySelectorAll(".dkErr").forEach(e=>e.remove());let first=null;
+  err.forEach(([id,bad,msg])=>{const el=$("#"+id);el.style.borderColor=bad?"#e0475b":"";if(bad){el.insertAdjacentHTML("afterend",`<div class="dkErr" style="color:#e0475b;font-size:12px;margin-top:4px">${msg}</div>`);first=first||el}});
+  if(first){first.scrollIntoView({behavior:"smooth",block:"center"});first.focus();return}
+  btn.disabled=true;btn.textContent="Đang gửi…";
   sv("gt_me",{...me(),ten:d.ho_ten,cty:d.cong_ty,sdt:d.sdt,email:d.email,web:d.website});
-  try{await send({action:"dang_ky_hv",...d})}catch(e){}
-  closeM();const b=$("#dkBox");if(b)b.innerHTML=`<div style="text-align:center;padding:24px 8px"><div style="font-size:44px">✅</div><h3>Đã gửi đăng ký!</h3><div class="mut">Cảm ơn anh/chị. Ban quản trị HAMEE sẽ liên hệ sớm.</div></div>`;
-  toast("Đã gửi đăng ký! HAMEE sẽ liên hệ sớm");
-  openOA(`[ĐĂNG KÝ HỘI VIÊN] ${d.ho_ten} – ${d.chuc_danh}\n${d.cong_ty}\nSĐT: ${d.sdt} – ${d.email}`)}
+  try{await send({action:"dang_ky_hv",...d})}catch(e){btn.disabled=false;btn.textContent="GỬI ĐĂNG KÝ";return toast("Lỗi mạng, vui lòng thử lại")}
+  const ok=`<div style="text-align:center;padding:20px 8px"><div style="font-size:52px">✅</div><h3 style="margin:8px 0">Đăng ký thành công!</h3>
+    <div style="color:#3b4a66;line-height:1.6">Văn phòng HAMEE đã nhận thông tin của <b>${esc(d.cong_ty)}</b>.<br>Chúng tôi sẽ phản hồi lại anh/chị trong thời gian sớm nhất.</div>
+    <div class="mut" style="font-size:12px;margin-top:10px">Cảm ơn anh/chị đã quan tâm Hiệp hội DN Cơ khí – Điện TP.HCM.</div></div>`;
+  const b=$("#dkBox");if(b&&$("#dk").classList.contains("on")){closeM();b.innerHTML=ok;scrollTo(0,0)}else modal(ok+`<button class="btn" style="width:100%" onclick="closeM()">ĐÓNG</button>`)}
 function openPost(){const m=me();
   modal(`<h3 style="margin:0 0 4px">Gửi nhu cầu mua / bán</h3><div class="mut" style="font-size:13px">Tin sẽ hiển thị sau khi Ban quản trị duyệt.</div>
   <label>Loại nhu cầu *</label><div class="seg" id="pT" style="box-shadow:none;border:1px solid var(--bd)"><div data-v="mua" class="${st.type=="mua"?"on":""}">Cần mua</div><div data-v="ban" class="${st.type=="ban"?"on":""}">Cần bán</div></div>
